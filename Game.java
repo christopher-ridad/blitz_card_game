@@ -80,6 +80,7 @@ public class Game {
     }
 
     /***** GAME METHODS *****/
+    
     private void delay(){
         try {
             Thread.sleep(2000); // 2 seconds delay before the player can respond

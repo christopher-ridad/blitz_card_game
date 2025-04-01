@@ -3,6 +3,7 @@ import java.util.*;
 public class Deck {
 
     /***** INSTANCE VARIABLES  *****/
+    
     public Stack<Card> cards; // Stack to hold the cards in the deck;
     private int size; // Number of cards in the deck
 
