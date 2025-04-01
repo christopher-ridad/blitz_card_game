@@ -2,7 +2,6 @@
 
 ## Objective
 Achieve the highest total value of cards of the same suit. The highest possible score is 31.
-A 10, a face card (Jack, Queen, King), and an Ace of the same suit instantly win!
 
 ## How to Play
 Each player is dealt 3 cards in their hand. At the start of the game, turn order is automatically randomized.
