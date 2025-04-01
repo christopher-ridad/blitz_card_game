@@ -4,14 +4,12 @@ public class Card {
 
     private final int rank; // 1-13 (Ace to King)
     private final int suit; // 0-3 (Hearts, Diamonds, Clubs, Spades)
-    private boolean isContributing; // Tracks if the card is contributing to the player's score
 
     /***** CONSTRUCTORS *****/
 
     public Card(int rank, int suit) {
         this.rank = rank;
         this.suit = suit;
-        this.isContributing = false; 
     }
 
     /***** ACCESSOR METHODS *****/
@@ -34,17 +32,6 @@ public class Card {
     // getSuit(): Returns the suit of a Card
     public int getSuit() {
         return suit;
-    }
-
-    // isContributing(): Returns if the card is contributing to the player's score
-    public boolean isContributing() {
-        return this.isContributing;
-    }
-
-    /***** MUTATOR METHODS *****/
-
-    public void setIsContributing(boolean bool){
-        this.isContributing = bool;
     }
 
     /***** PRINTER METHODS *****/
