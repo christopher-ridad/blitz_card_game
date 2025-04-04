@@ -32,7 +32,7 @@ public class AIPlayer extends Player {
 
     // shouldKnock(): Determines if the AI player should knock based on the strength of their hand
     public boolean shouldKnock() {
-        // The AI player will knock if their score is 28 or higher
+        // The AI player will knock if their score is 27 or higher
         return getScore() >= 27;
     }
 }
