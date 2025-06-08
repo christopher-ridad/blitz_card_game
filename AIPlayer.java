@@ -1,3 +1,6 @@
+import src.domain.cards.Card;
+import src.domain.player.Player;
+
 import java.util.*;
 
 public class AIPlayer extends Player {
@@ -7,7 +10,7 @@ public class AIPlayer extends Player {
 
     /***** AIPlayer METHODS *****/
 
-    // improveHand(Card newCard): Determines which card to discard to improve the hand of the AI player
+    // improveHand(src.domain.cards.Card newCard): Determines which card to discard to improve the hand of the AI player
     public Card improveHand(Card newCard) {
         Card discardCard = newCard;
         int simulateScore = getScore();
@@ -21,7 +24,7 @@ public class AIPlayer extends Player {
         return discardCard; // Return the card to be discarded
     }
 
-    // simulateHand(Card newCard, Card discardCard): Simulates the hand by adding a new card and removing a current card in the hand
+    // simulateHand(src.domain.cards.Card newCard, src.domain.cards.Card discardCard): Simulates the hand by adding a new card and removing a current card in the hand
     private int simulateHand(Card newCard, Card discardCard){
         ArrayList<Card> tempHand = new ArrayList<>();
         tempHand.addAll(this.hand); // Copy the current hand

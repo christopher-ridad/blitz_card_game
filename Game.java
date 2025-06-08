@@ -1,3 +1,7 @@
+import src.domain.cards.Card;
+import src.domain.cards.Deck;
+import src.domain.player.Player;
+
 import java.util.*;
 
 
@@ -25,7 +29,7 @@ public class Game {
 
     /***** PRINTER METHODS ******/
 
-    // displayGameInfo(String playerName, List<Card> hand, int score): Display's the player's turn information
+    // displayGameInfo(String playerName, List<src.domain.cards.Card> hand, int score): Display's the player's turn information
     public void displayTurnInfo(Player player) {
         // Display player's name
         System.out.println("\n====================");
@@ -33,7 +37,7 @@ public class Game {
         System.out.println("====================");
     
         // Display deck and discard pile information
-        System.out.println("Deck: " + deck.getSize() + " cards remaining");
+        System.out.println("src.domain.cards.Deck: " + deck.getSize() + " cards remaining");
         System.out.println("Discard Pile: " + discardPile.peekTopCard());
     
         System.out.println("--------------------");
@@ -112,7 +116,7 @@ public class Game {
         return playerIndex;
     }
 
-    // drawDeckCard(Player player, Scanner scan): Player draws card from the deck
+    // drawDeckCard(src.domain.player.Player player, Scanner scan): src.domain.player.Player draws card from the deck
     public void drawDeckCard(Player player, Scanner scan){
         // Remove top card from the deck
         Card drawnCard = deck.removeCard();
@@ -120,7 +124,7 @@ public class Game {
         OUTER:
         while(true) {
             System.out.println("====================");
-            System.out.println("Card Drawn!");
+            System.out.println("src.domain.cards.Card Drawn!");
             System.out.println("====================");
             System.out.println("You drew: **" + drawnCard + "**");
             System.out.println("Do you want to keep this card? (y/n)");
@@ -131,7 +135,7 @@ public class Game {
                 case "y" -> {
                     // Determine which card the player wants to discard from their hand
                     System.out.println("====================");
-                    System.out.println("Discard a Card ");
+                    System.out.println("Discard a src.domain.cards.Card ");
                     System.out.println("====================");
                     System.out.println("Which card do you want to discard?");
                     System.out.println("(1) " + player.hand.get(0));
@@ -169,7 +173,7 @@ public class Game {
         }
     }
 
-    // drawDiscardCard(Player player, Scanner scan): Player draws card from the discard pile
+    // drawDiscardCard(src.domain.player.Player player, Scanner scan): src.domain.player.Player draws card from the discard pile
     public void drawDiscardCard(Player player, Scanner scan){
         // Remove top card from the discard pile
         Card drawnCard = discardPile.removeCard();
@@ -180,7 +184,7 @@ public class Game {
         
             // Determine which card the player wants to discard from their hand
             System.out.println("====================");
-            System.out.println("Discard a Card ");
+            System.out.println("Discard a src.domain.cards.Card ");
             System.out.println("====================");
             System.out.println("Which card do you want to discard?");
             System.out.println("(1) " + player.hand.get(0));
@@ -214,7 +218,7 @@ public class Game {
         displayNewHand(player);
     }
 
-    // playerTurn(Player player, Scanner scan): Handles the player's turn logic, 
+    // playerTurn(src.domain.player.Player player, Scanner scan): Handles the player's turn logic,
     // prompts the player for their action (draw from deck, draw from discard pile, or knock)
     public void playerTurn(Player player, Scanner scan){
         OUTER:
@@ -235,7 +239,7 @@ public class Game {
                     break OUTER;
                 }
                 case 3 -> {
-                    // Player knocks if no other player has knocked (invalid knock otherwise)
+                    // src.domain.player.Player knocks if no other player has knocked (invalid knock otherwise)
                     if (this.playerKnocked) {
                         System.out.println("====================");
                         System.out.println("You have already knocked. Please choose another option.");
@@ -269,7 +273,7 @@ public class Game {
 
         // 3. If the card from the discard pile does not improve the hand, draw from the deck
         if(worstCard.equals(topDiscard)){
-            System.out.println("\nAI Player is drawing a card from the deck.");
+            System.out.println("\nAI src.domain.player.Player is drawing a card from the deck.");
             delay();
 
             Card drawnCard = deck.removeCard();
@@ -285,21 +289,21 @@ public class Game {
                 discardPile.addCard(worstCard);
                 aiPlayer.addCard(drawnCard);
             }
-            System.out.println("AI Player is discarding the " + worstCard + ".");
+            System.out.println("AI src.domain.player.Player is discarding the " + worstCard + ".");
             delay();
         }
         // 4. If the card from the discard pile does improve the hand, take it
         else{
-            System.out.println("\nAI Player is taking the " + discardPile.peekTopCard() + " from the discard pile.");
+            System.out.println("\nAI src.domain.player.Player is taking the " + discardPile.peekTopCard() + " from the discard pile.");
             delay();
-            System.out.println("AI Player is discarding the " + worstCard + ".");
+            System.out.println("AI src.domain.player.Player is discarding the " + worstCard + ".");
             delay();
             discardPile.removeCard();
             aiPlayer.addCard(topDiscard);
             aiPlayer.removeCard(worstCard);
             discardPile.addCard(worstCard);
         }
-        System.out.println("AI Player's turn has ended.\n");
+        System.out.println("AI src.domain.player.Player's turn has ended.\n");
         delay();
     }
 
@@ -333,7 +337,7 @@ public class Game {
             displayTurnInfo(currentPlayer);
 
             // Determine if the current player is an AI or a human player
-            // Player takes their turn
+            // src.domain.player.Player takes their turn
             if(currentPlayer instanceof AIPlayer aiPlayer){
                 AITurn(aiPlayer, scan);
             }

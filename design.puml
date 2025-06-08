@@ -1,0 +1,94 @@
+@startuml
+
++class Card{
+    -{final} rank: int
+    -{final} suit: int
+
+    +Card(rank: int, suit: int)
+    +getRank(): int
+    +getCardValue(): int
+    +getSuit(): int
+    +toString(): String
+}
+
++class Deck{
+    +cards: Stack<Card>
+    -size: int
+
+    +Deck(fillDeck: boolean)
+    +getSize(): int
+    +addCard(randomCard: Card): void
+    +removeCard(): Card
+    +peekTopCard(): Card
+    +shuffle(): void
+}
+
++class Player{
+    +hand: ArrayList<Card>
+    -{final} name: String
+    -score: int
+    -autoWin: boolean
+
+    +Player(name: String)
+    +getName(): String
+    +getScore(): int
+    +getAutoWin(): boolean
+    +addCard(randomCard: Card): void
+    +removeCard(randomCard: Card): void
+    +setScore(newScore: int): void
+    -setAutoWin(): void
+    +calculateScore(playerHand: ArrayList<Card>): int
+}
+
++class AIPlayer{
+    +AIPlayer(name: String)
+    +improveHand(newCard: Card): Card
+    -simulateHand(newCard: Card, discardCard: Card): int
+    +shouldKnock(): boolean
+}
+
++class Game{
+    -{final} deck: Deck
+    -{final} discardPile: Deck
+    -{final} players: List<Player>
+    -{final} gameRunning: boolean
+    -{final} playerKnocked: boolean
+
+    +Game(d: deck, disc: deck, p: List<Player>)
+    +displayTurnInfo(player: Player): void
+    +promptPlayerChoice(): void
+    +displayNewHand(player: Player): void
+
+    -delay(): void
+    +startGame(): void
+    +nextPlayerIndex(playerIndex: int): int
+    +drawDeckCard(player: Player, scan: Scanner): void
+    +drawDiscardCard(player: Player, scan: Scanner): void
+    +playerTurn(player: Player, scan: Scanner): void
+    +AITurn(player: Player, scan: Scanner): void
+    +determineWinner(): Player
+    +playGame(): void
+}
+
++class Main{
+    +{static} printGameDescription(): void
+    +{static} main(String[] args): void
+}
+
+'Relationships
+Deck --> "*" Card
+Deck ..> Card
+Player --> "*" Card
+Player ..> Card
+AIPlayer --|> Player
+AIPlayer ..> Card
+Game --> "2" Deck
+Game --> "*" Player
+Game ..> Player
+Game ..> AIPlayer
+Game ..> Deck
+Game ..> Card
+Main ..> "1" Player
+Main ..> "1" AIPlayer
+Main ..> Game
+@enduml

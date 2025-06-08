@@ -1,3 +1,6 @@
+import src.domain.cards.Deck;
+import src.domain.player.Player;
+
 import java.util.*;
 
 public class Main {
@@ -46,7 +49,7 @@ public class Main {
         String name = scan.nextLine();
         Player user_player = new Player(name);
 
-        AIPlayer ai_player = new AIPlayer("AI Player");
+        AIPlayer ai_player = new AIPlayer("AI src.domain.player.Player");
         Game game = new Game(new Deck(true), new Deck(false), Arrays.asList(user_player, ai_player));
 
         game.playGame(); // Begin the game

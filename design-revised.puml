@@ -1,0 +1,381 @@
+@startuml
+package presentation{
+    +class Main{
+        +{static} main(String[] args): void
+    }
+
+    +class MainWindow {
+        -gameController: GameController
+        -statsWindow: StatsView
+
+        +display(): void
+        -handleStartGame(): void
+        -handleViewStats(): void
+    }
+
+    +class GameView{
+        ~displayGameSetup(): void
+        ~displayEndScreen(): void
+    }
+
+    +class StatsView {
+        -loader: Loader
+
+        +StatsView(loader: Loader)
+        ~displayStats(): void
+    }
+
+    +class GameController{
+        -gameState: GameState
+        -blitz: Blitz
+        -statsManager: StatsManager
+        -players: Map<int, Player>
+        -currentTurn: int
+
+        +GameController()
+        -setup(): void
+        -runGameLoop(): void
+        -switchPlayerTurn(): void
+
+        -detectAndHandleDrawCardFromDeck(): void
+        -detectAndHandleDrawCardFromDiscardPile(): void
+        -detectAndHandleKnock(): void
+        -detectAndHandleInstantWin(): void
+        -detectAndHandleStatsViewing(): void
+    }
+}
+
+package domain{
+    package cards{
+        +enum Suit{
+            CLUBS
+            SPADES
+            HEARTS
+            DIAMONDS
+        }
+
+        +enum Rank{
+            ONE
+            TWO
+            THREE
+            FOUR
+            FIVE
+            SIX
+            SEVEN
+            EIGHT
+            NINE
+            TEN
+            JACK
+            QUEEN
+            KING
+            ACE
+        }
+
+        +class Card{
+            -{final} rank: Rank
+            -{final} suit: Suit
+
+            +Card(rank: Rank, suit: Suit)
+            +getRank(): Rank
+            +getSuit(): Suit
+            +toString(): String
+        }
+
+        +class Deck{
+            -{final} cards: Stack<Card>
+
+            +Deck()
+            +shuffle(): void
+            +drawCard(): Card
+            +isEmpty(): boolean
+            +size(): int
+        }
+
+        note right of Deck
+        Initializes a standard 52-card playing deck.
+        end note
+    }
+
+    package player{
+        +class Player {
+            -isBot: boolean
+            -allStats: List<Statistics>
+            -hand: Hand
+            -aiStrategy: AIStrategy
+
+            +Player()
+            +Player(aiStrategy: AIStrategy)
+            +makeMoveDecision() <<throws>> NoMoveDecisionException: Move
+            +isBot(): boolean
+        }
+
+        +exception NoMoveDecisionException{
+        }
+
+        +class Hand {
+            -{final} cards: List<Card>
+            -{final} scoringStrategy: ScoringStrategy
+            -score: int
+
+            +Hand(cards: List<Card>, scoringStrategy: ScoringStrategy)
+            ~addCard(playingCard: Card): void
+            ~removeCard(playingCard: Card): void
+            -calculateScore(): void
+            +getCards(): List<Card>
+            +getScore(): int
+            +size(): int
+        }
+
+        note left of Player
+        - Player(): human player constructor
+        - Player(aiStrategy: AIStrategy): AI player constructor
+        - makeMoveDecision(): call this.aiStrategy.makeMoveDecision
+        end note
+
+        +interface AIStrategy {
+            +makeMoveDecision(): Move
+        }
+
+        +class SimpleAIStrategy {
+            -blitz: Blitz
+
+            +makeMoveDecision(): Move
+            +update(): void
+        }
+
+        +class ProbabilisticAIStrategy {
+            -blitz: Blitz
+
+            +makeMoveDecision(): Move
+            +update(): void
+        }
+
+        +interface ScoringStrategy{
+            +calculateScore(cards: List<Card>): int
+        }
+
+    }
+
+    package blitzengine{
+        +enum GameState{
+            REGULAR_ROUND
+            KNOCK_ROUND
+            DECK_EMPTY
+            PLAYER_REGULAR_WIN
+            MULTIPLE_PLAYERS_WIN
+            PLAYER_INSTANT_WIN
+        }
+
+        +class Move {
+            -playerTurn: PlayerTurn
+            -player: Player
+            -cardDrawn: Card
+            -cardDiscarded: Card
+            -timeStamp: Date
+
+            +Move(playerTurn: PlayerTurn, player: Player, cardDrawn: Card, cardDiscarded: Card, timeStamp: Date)
+            +getPlayerTurn(): PlayerTurn
+            +getPlayer(): Player
+            +getCardDrawn(): Card
+            +getCardDiscarded(): Card
+            +getTimeStamp(): Date
+        }
+
+        +enum PlayerTurn{
+            DRAW_CARD_FROM_DECK
+            DRAW_CARD_FROM_DISCARD_PILE
+            KNOCK
+        }
+
+        +class Blitz{
+            -deck: Deck
+            -discardPile: DiscardPile
+            -currentGameState: GameState
+            -observers: List<Observer>
+            -lastMoveMade: Move
+
+            +Blitz(deck: Deck, discardPile: DiscardPile, observers: List<Observer>)
+
+            +drawCardFromDeck(): void
+            +drawCardFromDiscardPile(): void
+            +knock(): void
+
+            +getCurrentGameState(): GameState
+            +updateTurn(): void
+
+            +addObserver(observer: Observer): void
+            +removeObserver(observer: Observer): void
+            +notifyObservers(): void
+            +getLastMoveMade(): Move
+        }
+
+        +class DiscardPile {
+            -cards: Stack<Card>
+
+            +DiscardPile()
+            +addCard(card: Card): void
+            +peekTopCard(): Card
+            +drawTopCard(): Card
+        }
+
+        +class BlitzScoringStrategy{
+            +calculateScore(cards: List<Card>): int
+            -getRankValue(rank: Rank): int {
+        }
+    }
+
+   package stats{
+        +class StatsManager{
+            -playerSpecificStats: Map<Player, List<Stats>>
+            -blitz: Blitz
+            -loader: Loader
+            -saver: Saver
+
+            +StatsManager(blitz: Blitz, loader: Loader, saver: Saver)
+            +update(): void
+            +saveAllStats(): void
+            +loadPlayerStats(player: Player): List<String>
+        }
+
+        +abstract class Stats{
+            ~type: String
+            +Stats()
+            +{abstract} update(Move): void
+        }
+
+        +class MoveHistory{
+            -moves: List<Move>
+            +MoveHistory()
+            +update(Move): void
+            +recordMove(Move): void
+            +loadMoves(): List<String>
+            +toString(): String
+        }
+    }
+}
+
+package datasource{
+    +interface Observer {
+        + update(): void
+    }
+
+    +interface Loader{
+        +next(): void
+        +hasNext(): void
+    }
+
+    +class CSVFileLoader{
+        -fileName: String
+
+        +CSVFileLoader(fileName: String)
+        +next(): void
+        +hasNext(): void
+    }
+
+    +class RelationalDatabaseLoader{
+        -databaseName: String
+
+        +RelationalDatabaseLoader(databaseName: String)
+        +next(): void
+        +hasNext(): void
+    }
+
+    +class GameHistoryLoader{
+        -gameID: int
+
+        +RelationalDatabaseLoader(gameID: int)
+        +hasNext(): void        +next(): void
+
+    }
+
+    interface Saver{
+        +append(data: String): void
+    }
+
+    +class CSVFileSaver{
+        -filePath: String
+
+        +CSVFilerLoader(filePath: String)
+        +append(data: String): void
+    }
+
+    +class RelationalDatabaseSaver{
+        -filePath: String
+
+        +RelationalDatabaseSaver(filePath: String)
+        +append(data: String): void
+    }
+
+    +class GameHistorySaver{
+        -filePath: String
+
+        +RelationalDatabaseSaver(filePath: String)
+        +append(data: String): void
+        +update(): void
+    }
+}
+
+'Relationships
+'Presentation
+
+Main --> MainWindow
+MainWindow ..> GameView
+MainWindow --> StatsView
+MainWindow --> GameController
+
+GameController -u-> GameView
+GameController --> GameState
+GameController --> Blitz
+GameController --> StatsManager
+GameController --> "*" Player
+
+StatsView --> Loader
+
+'Domain
+'cards package
+Card --> Suit
+Card --> Rank
+Deck --> "*" Card
+
+'player package
+Player --> Hand
+Player --> AIStrategy
+Player ..> NoMoveDecisionException
+Hand --> ScoringStrategy
+SimpleAIStrategy .u.|> AIStrategy
+ProbabilisticAIStrategy .u.|> AIStrategy
+AIStrategy ..|> Observer
+
+Hand --> "*" Card
+
+'blitzengine package
+Blitz --> "*" Observer
+Blitz --> Deck
+Blitz --> DiscardPile
+Blitz --> Move
+Blitz --> GameState
+Move --> Card
+Move --> PlayerTurn
+Move --> Player
+BlitzScoringStrategy ..|> ScoringStrategy
+
+'stats package
+StatsManager .u.|> Observer
+StatsManager --> "*" Player
+StatsManager --> "*" Stats
+StatsManager --> Blitz
+StatsManager --> Loader
+StatsManager --> Saver
+MoveHistory -u-|> Stats
+
+'Datasource
+CSVFileLoader .u.|> Loader
+RelationalDatabaseLoader .u.|> Loader
+GameHistoryLoader .u.|> Loader
+CSVFileSaver .u.|> Saver
+RelationalDatabaseSaver .u.|> Saver
+GameHistorySaver .u.|> Saver
+
+GameHistorySaver .u.|> Observer
+
+@enduml
