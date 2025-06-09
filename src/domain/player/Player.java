@@ -1,6 +1,7 @@
 package src.domain.player;
 
 import src.domain.blitzengine.Move;
+import src.domain.blitzengine.PlayerID;
 
 //            +makeMoveDecision(): Move
 //            +isBot(): boolean
@@ -9,17 +10,24 @@ public class Player {
     // ??? private List<Stats> allStats;
     private final Hand hand;
     private final AIStrategy aiStrategy;
+    private final PlayerID playerId;
 
-    public Player(Hand hand) {
-        isBot = false;
+    public Player(PlayerID playerId, Hand hand) {
+        this.playerId = playerId;
         this.hand = hand;
         this.aiStrategy = null;
+        this.isBot = false;
     }
 
-    public Player(Hand hand, AIStrategy aiStrategy) {
-        isBot = true;
+    public Player(PlayerID playerId, Hand hand, AIStrategy aiStrategy) {
+        this.playerId = playerId;
         this.hand = hand;
         this.aiStrategy = aiStrategy;
+        this.isBot = true;
+    }
+
+    public PlayerID getPlayerId() {
+        return playerId;
     }
 
     public Move makeMoveDecision() throws NoMoveDecisionException {
