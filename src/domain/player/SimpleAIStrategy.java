@@ -22,7 +22,7 @@ public class SimpleAIStrategy implements AIStrategy {
             List<Card> simulated = new ArrayList<>(currentHand);
             simulated.remove(card);
             simulated.add(topCard);
-            int simulatedScore =  new BlitzScoringStrategy().calculateScore(simulated)
+            int simulatedScore =  new BlitzScoringStrategy().calculateScore(simulated);
 
             if (simulatedScore > bestScore) {
                 bestScore = simulatedScore;
