@@ -71,17 +71,13 @@ public class GameController {
             players.put(botId, bot);
             playerOrder.add(botId);
         }
-
-        // Deal initial cards to all players
-        dealInitialCards();
         
-        // Shuffle player order for fair start
+        dealInitialCards();
         Collections.shuffle(playerOrder);
         currentTurn = 0;
     }
 
     private void dealInitialCards() {
-        // Deal 3 cards to each player
         for (int cardCount = 0; cardCount < 3; cardCount++) {
             for (Player player : players.values()) {
                 Card card = blitz.drawCardFromDeck();
@@ -90,8 +86,6 @@ public class GameController {
                 }
             }
         }
-        
-        // Put one card in discard pile to start
         Card initialDiscard = blitz.drawCardFromDeck();
         if (initialDiscard != null) {
             blitz.getDiscardPile().addCard(initialDiscard);
@@ -106,7 +100,6 @@ public class GameController {
             PlayerID currentPlayerId = playerOrder.get(currentTurn);
             Player currentPlayer = players.get(currentPlayerId);
             
-            // Display turn information
             gameView.displayTurnInfo(currentPlayer, blitz.getDeck().size(), 
                                    blitz.getDiscardPile().peekTopCard());
 
@@ -121,7 +114,6 @@ public class GameController {
                 e.printStackTrace();
             }
 
-            // Check for instant win or other game state changes
             detectAndHandleInstantWin();
             
             if (!isGameOver()) {
@@ -130,11 +122,9 @@ public class GameController {
             }
         }
 
-        // Display end screen
         Player winner = determineWinner();
         gameView.displayEndScreen(winner, new ArrayList<>(players.values()));
         
-        // Save statistics
         statsManager.saveAllStats();
     }
 
@@ -150,12 +140,12 @@ public class GameController {
                     handleKnock(player);
                 } else {
                     System.out.println("You cannot knock yet!");
-                    handleHumanTurn(player); // Retry
+                    handleHumanTurn(player);
                 }
             }
             default -> {
                 System.out.println("Invalid choice. Please try again.");
-                handleHumanTurn(player); // Retry
+                handleHumanTurn(player);
             }
         }
     }
@@ -167,7 +157,6 @@ public class GameController {
             System.out.println(bot.getPlayerID() + " made their move.");
         } catch (NoMoveDecisionException e) {
             System.err.println("Bot failed to make a decision: " + e.getMessage());
-            // Default to drawing from deck
             handleDrawFromDeck(bot);
         }
     }
@@ -176,14 +165,12 @@ public class GameController {
         Card drawnCard = blitz.drawCardFromDeck();
         if (drawnCard != null) {
             if (player.isBot()) {
-                // Bot logic for keeping/discarding card
                 player.getHand().addCard(drawnCard);
-                // Bot should discard worst card (implement in AI strategy)
                 Card toDiscard = selectCardToDiscard(player);
                 player.getHand().removeCard(toDiscard);
                 blitz.getDiscardPile().addCard(toDiscard);
             } else {
-                // Human player interaction
+
                 boolean keepCard = gameView.confirmCardKeep(drawnCard);
                 if (keepCard) {
                     player.getHand().addCard(drawnCard);
@@ -196,7 +183,6 @@ public class GameController {
                 }
             }
             
-            // Record the move
             Move move = new Move(PlayerTurn.DRAW_CARD_FROM_DECK, player, drawnCard, 
                                blitz.getDiscardPile().peekTopCard(), new Date());
             blitz.setLastMoveMade(move);
@@ -220,7 +206,6 @@ public class GameController {
                 blitz.getDiscardPile().addCard(toDiscard);
             }
             
-            // Record the move
             Move move = new Move(PlayerTurn.DRAW_CARD_FROM_DISCARD_PILE, player, drawnCard, 
                                blitz.getDiscardPile().peekTopCard(), new Date());
             blitz.setLastMoveMade(move);
@@ -232,18 +217,15 @@ public class GameController {
         blitz.knock();
         System.out.println(player.getPlayerID() + " has knocked! Final round begins.");
         
-        // Record the knock move
         Move move = new Move(PlayerTurn.KNOCK, player, null, null, new Date());
         blitz.setLastMoveMade(move);
         blitz.notifyObservers();
     }
 
     private Card selectCardToDiscard(Player player) {
-        // Simple logic: discard the card that contributes least to the best suit
         List<Card> cards = player.getHand().getCards();
         Card worstCard = cards.get(0);
-        
-        // This is a simplified version - in practice, this would be more sophisticated
+
         for (Card card : cards) {
             if (card.getRank().ordinal() < worstCard.getRank().ordinal()) {
                 worstCard = card;
@@ -266,7 +248,6 @@ public class GameController {
     }
 
     private boolean canPlayerKnock(Player player) {
-        // Player can knock if they haven't knocked yet and game is in regular state
         return blitz.getCurrentGameState() == GameState.REGULAR_ROUND;
     }
 
