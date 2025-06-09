@@ -3,63 +3,54 @@ package presentation;
 import domain.blitzengine.*;
 import domain.player.*;
 import domain.stats.*;
+import domain.card.*;
 
 import java.util.*;
 
-
 public class GameController {
-    private GameState gameState;
-    private Blitz blitz;
-    private StatsManager statsManager;
-    private Map<Integer, Player> players = new HashMap<>();
-    private int currentTurn;
+    private final GameView gameView;
+    private final StatsManager statsManager;
+    private final Blitz blitz;
 
     public GameController() {
-        setup();
+        this.statsManager = new StatsManager();
+        this.gameView = new GameView();
+        this.blitz = new Blitz();
     }
 
-    private void setup() {
-        Deck deck = new Deck();
-        DiscardPile discardPile = new DiscardPile();
-        List<Observer> observers = new ArrayList<>();
-        blitz = new Blitz(deck, discardPile, observers);
-
-        // Add dummy players
-        players.put(1, new Player());  // human
-        players.put(2, new Player(new SimpleAIStrategy(blitz))); // bot
-
-        statsManager = new StatsManager(blitz, new datasource.CSVFileLoader("stats.csv"),
-                                               new datasource.CSVFileSaver("stats.csv"));
-        observers.add(statsManager);
+    public StatsManager getStatsManager() {
+        return statsManager;
     }
 
-    public void runGameLoop() {
-        GameView view = new GameView();
-        view.displayGameSetup();
+    public void runGameLoop(int numBots, String difficulty) {
+        gameView.displayGameSetup();
 
-        while (!gameEnded()) {
-            // Example: simulate player turns here
-            switchPlayerTurn();
-            System.out.println("Player " + currentTurn + "'s turn...");
-            // Implement detectAndHandle... methods to simulate moves
+        blitz.setup();
+        while (!blitz.isGameOver()) {
+            Player currentPlayer = blitz.getCurrentPlayer();
+            gameView.displayTurnInfo(currentPlayer, blitz.getDeckSize(), blitz.getTopDiscardCard());
+
+            if (!currentPlayer.isAI()) {
+                int choice = gameView.promptPlayerChoice(!blitz.hasKnocked());
+                handleHumanChoice(choice, currentPlayer);
+            } else {
+                blitz.processAITurn((AIPlayer) currentPlayer);
+                gameView.displayDelay();
+            }
+
+            blitz.advanceTurn();
         }
 
-        view.displayEndScreen();
+        Player winner = blitz.determineWinner();
+        gameView.displayEndScreen(winner, blitz.getAllPlayers());
+        statsManager.recordGameResult(winner);
     }
 
-    private boolean gameEnded() {
-        // Stub logic
-        return false;
+    private void handleHumanChoice(int choice, Player player) {
+        switch (choice) {
+            case 1 -> blitz.drawFromDeck(player, gameView);
+            case 2 -> blitz.drawFromDiscardPile(player, gameView);
+            case 3 -> blitz.knock(player);
+        }
     }
-
-    private void switchPlayerTurn() {
-        currentTurn = (currentTurn % players.size()) + 1;
-    }
-
-    // Stub methods
-    private void detectAndHandleDrawCardFromDeck() {}
-    private void detectAndHandleDrawCardFromDiscardPile() {}
-    private void detectAndHandleKnock() {}
-    private void detectAndHandleInstantWin() {}
-    private void detectAndHandleStatsViewing() {}
 }

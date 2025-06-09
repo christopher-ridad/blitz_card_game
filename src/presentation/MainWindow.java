@@ -5,79 +5,48 @@ import java.util.Scanner;
 
 public class MainWindow{
     private GameController gameController;
-    private StatsView statsWindow;
+    private StatsView statsView;
+    private Scanner scanner;
 
-    public void display() {
-        printGameDescription();
+    public MainWindow(){
+        this.gameController = new GameController();
+        this.statsView = new StatsView(gameController.getStatsManager());
+        this.scanner = new Scanner (System.in);
 
-        Scanner scanner = new Scanner(System.in);
+    }
 
-        System.out.println("Enter your name:");
-        String playerName = scanner.nextLine();
-
-        gameController = new GameController(playerName);  // Initialize controller with the player name
-        statsWindow = new StatsView(gameController.getStatsManager().getLoader());
-
+    public void display(){
+        System.out.println("=== Welcome to Blitz Card Game ===");
         while (true) {
-            System.out.println("""
-            ===========================================
-            What would you like to do?
-            1. Start Game
-            2. View Stats
-            3. Exit
-            ===========================================
-            """);
+            System.out.println("(1) Start Game");
+            System.out.println("(2) View Stats");
+            System.out.println("(0) Exit");
 
             String choice = scanner.nextLine();
-
             switch (choice) {
                 case "1" -> handleStartGame();
                 case "2" -> handleViewStats();
-                case "3" -> {
-                    System.out.println("Thanks for playing Blitz!");
+                case "0" -> {
+                    System.out.println("Thanks for playing!");
                     return;
                 }
-                default -> System.out.println("Invalid option. Please try again.");
+                default -> System.out.println("Invalid input. Try again.");
             }
         }
     }
 
     private void handleStartGame() {
-        gameController.setup();
-        gameController.runGameLoop();
+        System.out.print("Enter number of bots (1–3): ");
+        int numBots = Integer.parseInt(scanner.nextLine());
+
+        System.out.print("Select difficulty (easy/hard): ");
+        String difficulty = scanner.nextLine().trim().toLowerCase();
+
+        gameController.runGameLoop(numBots, difficulty);
+        //gameController.runGameLoop();
     }
 
     private void handleViewStats() {
-        statsWindow.displayStats();
-    }
-
-    public static void printGameDescription() {
-        System.out.printf("""
-        ===========================================
-                      Blitz Card Game
-        ===========================================
-        Objective:
-        Achieve the highest total value of cards of the same suit. The highest possible score is 31.
-
-        How to Play:
-        Each player is dealt 3 cards in their hand. On your turn, you can:
-        - Draw from the deck
-        - Take the top card from the discard pile
-        - Knock
-
-        If a player knocks, all others get one more turn. 
-        The game ends if the deck is empty.
-        A player instantly wins with 10 + face + Ace of the same suit.
-
-        Card Values:
-        - Number cards: face value
-        - Face cards: 10 points
-        - Aces: 11 points
-
-        Scoring:
-        Highest sum of same-suit cards in hand.
-
-        ===========================================
-        """);
+        statsView.displayStats();
     }
 }

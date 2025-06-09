@@ -12,7 +12,7 @@ public class StatsView {
     public void displayStats() {
         System.out.println("=== Player Stats / Game History ===");
         while (loader.hasNext()) {
-            loader.next(); // Internally this should print or fetch & display data
+            loader.next();
         }
         System.out.println("===================================");
     }
