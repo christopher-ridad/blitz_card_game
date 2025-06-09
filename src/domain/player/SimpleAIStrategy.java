@@ -1,3 +1,5 @@
+package src.domain.player;
+
 import src.domain.blitzengine.Blitz;
 import src.domain.blitzengine.Move;
 import src.domain.cards.Card;
@@ -9,10 +11,17 @@ import java.util.List;
 import java.util.Date;
 
 public class SimpleAIStrategy implements AIStrategy {
-    private Blitz blitz;
+    private final Blitz blitz;
+    private Move latestMove;
 
-    public Move makeMoveDecision(Hand hand) throws NoMoveDecisionException {
-        Card topCard = blitz.getLastMoveMade().getCardDiscarded();
+    public SimpleAIStrategy(Blitz blitz) {
+        this.blitz = blitz;
+        this.latestMove = null;
+        blitz.addObserver(this);
+    }
+
+    public Move makeMoveDecision(Hand hand){
+        Card topCard = latestMove.getCardDiscarded();
 
         List<Card> currentHand = new ArrayList<>(hand.getCards()); // You’ll need this method in Hand
         Card discardCandidate = topCard;
@@ -36,14 +45,13 @@ public class SimpleAIStrategy implements AIStrategy {
         }
 
         blitz.drawCardFromDiscardPile();
-        Card drawnCard = topCard;
         hand.removeCard(discardCandidate);
-        hand.addCard(drawnCard);
-        return new Move(PlayerTurn.DRAW_CARD_FROM_DISCARD_PILE, null, drawnCard, discardCandidate, new Date());
+        hand.addCard(topCard);
+        return new Move(PlayerTurn.DRAW_CARD_FROM_DISCARD_PILE, null, topCard, discardCandidate, new Date());
     }
 
     @Override
     public void update() {
-
+        this.latestMove = blitz.getLastMoveMade();
     }
 }

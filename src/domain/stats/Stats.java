@@ -1,12 +1,6 @@
-import src.domain.stats;
+package src.domain.stats;
 
 import src.domain.blitzengine.Move;
-import src.domain.player.Player;
-import datasource.Loader;
-import datasource.Saver;
-import src.domain.blitzengine.Blitz;
-
-import java.util.*;
 
 public abstract class Stats {
     protected String type;
