@@ -46,7 +46,7 @@ public class GameView {
     }
 
     public void displayTurnInfo(Player player, int deckSize, Card topDiscard) {
-        System.out.println("\nIt's " + player + "'s turn.");
+        System.out.println("\nIt's " + player.getPlayerId() + "'s turn.");
         System.out.println("Deck has " + deckSize + " cards.");
         System.out.println("Top discard card: " + topDiscard);
         System.out.println("--------------------");
@@ -86,9 +86,9 @@ public class GameView {
 
     public void displayEndScreen(Player winner, List<Player> allPlayers) {
         System.out.println("\n=== GAME OVER ===");
-        System.out.println("Winner: " + winner + " with score: " + winner.getHand().getScore());
+        System.out.println("Winner: " + winner.getPlayerId() + " with score: " + winner.getHand().getScore());
         for (Player p : allPlayers) {
-            System.out.println(p + "'s hand: " + p.getHand().getCards() + " = " + p.getHand().getScore());
+            System.out.println(p.getPlayerId() + "'s hand: " + p.getHand().getCards() + " = " + p.getHand().getScore());
         }
     }
 

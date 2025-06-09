@@ -41,6 +41,10 @@ public class Player {
         return this.isBot;
     }
 
+    public hand getHand(){
+        return this.hand;
+    }
+
 
 //    // setAutoWin(): Sets autoWin to true if their hand matches the automatic win condition
 //    private void setAutoWin(){

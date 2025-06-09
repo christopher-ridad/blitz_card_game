@@ -22,35 +22,11 @@ public class GameController {
         return statsManager;
     }
 
-    public void runGameLoop(int numBots, String difficulty) {
+    public void runGameLoop() {
         gameView.displayGameSetup();
-
-        blitz.setup();
-        while (!blitz.isGameOver()) {
-            Player currentPlayer = blitz.getCurrentPlayer();
-            gameView.displayTurnInfo(currentPlayer, blitz.getDeckSize(), blitz.getTopDiscardCard());
-
-            if (!currentPlayer.isAI()) {
-                int choice = gameView.promptPlayerChoice(!blitz.hasKnocked());
-                handleHumanChoice(choice, currentPlayer);
-            } else {
-                blitz.processAITurn((AIPlayer) currentPlayer);
-                gameView.displayDelay();
-            }
-
-            blitz.advanceTurn();
-        }
-
-        Player winner = blitz.determineWinner();
-        gameView.displayEndScreen(winner, blitz.getAllPlayers());
-        statsManager.recordGameResult(winner);
     }
 
     private void handleHumanChoice(int choice, Player player) {
-        switch (choice) {
-            case 1 -> blitz.drawFromDeck(player, gameView);
-            case 2 -> blitz.drawFromDiscardPile(player, gameView);
-            case 3 -> blitz.knock(player);
-        }
+
     }
 }

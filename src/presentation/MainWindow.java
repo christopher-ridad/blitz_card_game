@@ -36,14 +36,14 @@ public class MainWindow{
     }
 
     private void handleStartGame() {
-        System.out.print("Enter number of bots (1–3): ");
-        int numBots = Integer.parseInt(scanner.nextLine());
+        // System.out.print("Enter number of bots (1–3): ");
+        // int numBots = Integer.parseInt(scanner.nextLine());
 
-        System.out.print("Select difficulty (easy/hard): ");
-        String difficulty = scanner.nextLine().trim().toLowerCase();
+        // System.out.print("Select difficulty (easy/hard): ");
+        // String difficulty = scanner.nextLine().trim().toLowerCase();
 
-        gameController.runGameLoop(numBots, difficulty);
-        //gameController.runGameLoop();
+        // gameController.runGameLoop(numBots, difficulty);
+        gameController.runGameLoop();
     }
 
     private void handleViewStats() {
