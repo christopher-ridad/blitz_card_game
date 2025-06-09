@@ -27,7 +27,6 @@ public class GameController {
         players = new LinkedHashMap<>();
         PlayerID[] allIds = PlayerID.values();
 
-        // Always one human player as PLAYER_ONE (example)
         Player human = new Player(allIds[0], new Hand(new ArrayList<>(), new BlitzScoringStrategy()));
         players.put(allIds[0], human);
 
@@ -46,7 +45,7 @@ public class GameController {
             players.put(botId, bot);
         }
 
-        blitz.setupPlayers(new ArrayList<>(players.values()));  // You’ll need to implement this in Blitz
+        //blitz.setupPlayers(new ArrayList<>(players.values()));  // You’ll need to implement this in Blitz
         currentTurn = 0;
     }
 
@@ -55,29 +54,8 @@ public class GameController {
 
         setup();  // Setup players and Blitz
 
-        while (!blitz.isGameOver()) {
-            PlayerID[] playerOrder = players.keySet().toArray(new PlayerID[0]);
-            PlayerID currentPlayerId = playerOrder[currentTurn];
-            Player currentPlayer = players.get(currentPlayerId);
-
-            gameView.displayTurnInfo(currentPlayer, blitz.getDeckSize(), blitz.getTopDiscardCard());
-
-            if (!currentPlayer.isBot()) {
-                int choice = gameView.promptPlayerChoice(!blitz.hasKnocked());
-                handleHumanChoice(choice, currentPlayer);
-            } else {
-                blitz.processAITurn((AIPlayer) currentPlayer);
-                gameView.displayDelay();
-            }
-
-            blitz.advanceTurn();
-            switchPlayerTurn();
-        }
-
-        Player winner = blitz.determineWinner();
-        gameView.displayEndScreen(winner, new ArrayList<>(players.values()));
-        statsManager.recordGameResult(winner);
     }
+
 
     private void switchPlayerTurn() {
         PlayerID[] playerOrder = players.keySet().toArray(new PlayerID[0]);
@@ -86,9 +64,9 @@ public class GameController {
 
     private void handleHumanChoice(int choice, Player player) {
         switch (choice) {
-            case 1 -> blitz.drawFromDeck(player, gameView);
-            case 2 -> blitz.drawFromDiscardPile(player, gameView);
-            case 3 -> blitz.knock(player);
+            case 1 -> PlayerTurn.DRAW_CARD_FROM_DISCARD_PILE;
+            case 2 -> PlayerTurn.DRAW_CARD_FROM_DECK;
+            case 3 -> PlayerTurn.KNOCK;
             default -> gameView.displayInvalidChoice();
         }
     }

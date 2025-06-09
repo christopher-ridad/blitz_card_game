@@ -100,20 +100,36 @@ public class GameView {
         }
     }
 
-    public int promptNumBots() {
-        System.out.print("How many bots would you like to play against? (1 to 5): ");
-        int num = -1;
-        while (num < 1 || num > 5) {
+    public String[] promptNumBotsAndDifficulty() {
+        int numBots = -1;
+        String difficulty = "";
+
+        // Prompt for number of bots (2 to 5)
+        System.out.print("How many bots would you like to play against? (2 to 5): ");
+        while (numBots < 2 || numBots > 5) {
             try {
-                num = Integer.parseInt(scanner.nextLine());
-                if (num < 1 || num > 5) {
-                    System.out.print("Please enter a number between 1 and 5: ");
+                numBots = Integer.parseInt(scanner.nextLine());
+                if (numBots < 2 || numBots > 5) {
+                    System.out.print("Please enter a number between 2 and 5: ");
                 }
             } catch (NumberFormatException e) {
                 System.out.print("Invalid input. Please enter a number: ");
             }
         }
-        return num;
+
+        // Prompt for difficulty (easy or hard)
+        System.out.print("Select bot difficulty (easy/hard): ");
+        while (!difficulty.equals("easy") && !difficulty.equals("hard")) {
+            difficulty = scanner.nextLine().trim().toLowerCase();
+            if (!difficulty.equals("easy") && !difficulty.equals("hard")) {
+                System.out.print("Invalid difficulty. Please enter 'easy' or 'hard': ");
+            }
+        }
+
+        // Return both as a String array [numBots as string, difficulty]
+        return new String[]{String.valueOf(numBots), difficulty};
     }
+
+
 
 }
