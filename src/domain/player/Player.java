@@ -38,4 +38,8 @@ public class Player {
     public boolean isBot(){
         return this.isBot;
     }
+
+    public Hand getHand(){
+        return thid.hand;
+    }
 }
