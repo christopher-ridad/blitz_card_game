@@ -28,6 +28,33 @@ public class BlitzScoringStrategy implements ScoringStrategy {
         return maxScore;
     }
 
+    public boolean checkInstantWin(List<Card> cards) {
+        Map<Suit, SuitFlags> suitFlagsMap = new HashMap<>();
+
+        for (Card card : cards) {
+            Suit suit = card.getSuit();
+            SuitFlags flags = suitFlagsMap.getOrDefault(suit, new SuitFlags());
+
+            Rank rank = card.getRank();
+            if (rank == Rank.TEN) {
+                flags.hasTen = true;
+            } else if (rank == Rank.JACK || rank == Rank.QUEEN || rank == Rank.KING) {
+                flags.hasFace = true;
+            } else if (rank == Rank.ACE) {
+                flags.hasAce = true;
+            }
+
+            suitFlagsMap.put(suit, flags);
+        }
+
+        for (SuitFlags flags : suitFlagsMap.values()) {
+            if (flags.hasTen && flags.hasFace && flags.hasAce) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private int getRankValue(Rank rank) {
         return switch (rank) {
             case ONE -> 1;
@@ -42,5 +69,11 @@ public class BlitzScoringStrategy implements ScoringStrategy {
             case TEN, JACK, QUEEN, KING -> 10;
             case ACE -> 11;
         };
+    }
+
+    private static class SuitFlags {
+        boolean hasTen = false;
+        boolean hasFace = false;
+        boolean hasAce = false;
     }
 }
