@@ -137,7 +137,8 @@ package domain{
         }
 
         +class SimpleAIStrategy {
-            -blitz: Blitz
+            -{final} blitz: Blitz
+            -lastMoveMade: Move
 
             +makeMoveDecision(): Move
             +update(): void

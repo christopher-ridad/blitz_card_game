@@ -26,13 +26,12 @@ public class Player {
         if (aiStrategy == null) {
             throw new NoMoveDecisionException("AI strategy not set for this player.");
         }
-        return this.aiStrategy.makeMoveDecision();
+        return this.aiStrategy.makeMoveDecision(this.hand);
     }
 
     public boolean isBot(){
         return this.isBot;
     }
-
 
 
 //    // setAutoWin(): Sets autoWin to true if their hand matches the automatic win condition
