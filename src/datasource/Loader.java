@@ -1,6 +1,6 @@
 package src.datasource;
 
 public interface Loader {
-    void next();
+    String next();
     boolean hasNext();
 }
