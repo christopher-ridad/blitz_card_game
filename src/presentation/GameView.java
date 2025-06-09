@@ -99,4 +99,21 @@ public class GameView {
             e.printStackTrace();
         }
     }
+
+    public int promptNumBots() {
+        System.out.print("How many bots would you like to play against? (1 to 5): ");
+        int num = -1;
+        while (num < 1 || num > 5) {
+            try {
+                num = Integer.parseInt(scanner.nextLine());
+                if (num < 1 || num > 5) {
+                    System.out.print("Please enter a number between 1 and 5: ");
+                }
+            } catch (NumberFormatException e) {
+                System.out.print("Invalid input. Please enter a number: ");
+            }
+        }
+        return num;
+    }
+
 }

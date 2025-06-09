@@ -11,22 +11,86 @@ public class GameController {
     private final GameView gameView;
     private final StatsManager statsManager;
     private final Blitz blitz;
+    private Map<PlayerID, Player> players;
+    private int currentTurn;
+
 
     public GameController() {
         this.statsManager = new StatsManager();
         this.gameView = new GameView();
         this.blitz = new Blitz();
+        this.players = new LinkedHashMap<>();
+        this.currentTurn = 0;
     }
 
-    public StatsManager getStatsManager() {
-        return statsManager;
+    private void setup() {
+        players = new LinkedHashMap<>();
+        PlayerID[] allIds = PlayerID.values();
+
+        // Always one human player as PLAYER_ONE (example)
+        Player human = new Player(allIds[0], new Hand(new ArrayList<>(), new BlitzScoringStrategy()));
+        players.put(allIds[0], human);
+
+        int numBots = gameView.promptNumBots();  // Implement prompt method in GameView
+        for (int i = 0; i < numBots; i++) {
+            PlayerID botId = allIds[i + 1];
+            String difficulty = gameView.promptBotDifficulty(botId); // returns "easy" or "hard"
+
+            AIStrategy aiStrategy = switch (difficulty.toLowerCase()) {
+                case "easy" -> new SimpleAIStrategy(blitz);
+                case "hard" -> new ProbabilisticAIStrategy(blitz);
+                default -> new SimpleAIStrategy(blitz);
+            };
+
+            Player bot = new Player(botId, new Hand(new ArrayList<>(), new BlitzScoringStrategy()), aiStrategy);
+            players.put(botId, bot);
+        }
+
+        blitz.setupPlayers(new ArrayList<>(players.values()));  // You’ll need to implement this in Blitz
+        currentTurn = 0;
     }
 
     public void runGameLoop() {
         gameView.displayGameSetup();
+
+        setup();  // Setup players and Blitz
+
+        while (!blitz.isGameOver()) {
+            PlayerID[] playerOrder = players.keySet().toArray(new PlayerID[0]);
+            PlayerID currentPlayerId = playerOrder[currentTurn];
+            Player currentPlayer = players.get(currentPlayerId);
+
+            gameView.displayTurnInfo(currentPlayer, blitz.getDeckSize(), blitz.getTopDiscardCard());
+
+            if (!currentPlayer.isBot()) {
+                int choice = gameView.promptPlayerChoice(!blitz.hasKnocked());
+                handleHumanChoice(choice, currentPlayer);
+            } else {
+                blitz.processAITurn((AIPlayer) currentPlayer);
+                gameView.displayDelay();
+            }
+
+            blitz.advanceTurn();
+            switchPlayerTurn();
+        }
+
+        Player winner = blitz.determineWinner();
+        gameView.displayEndScreen(winner, new ArrayList<>(players.values()));
+        statsManager.recordGameResult(winner);
+    }
+
+    private void switchPlayerTurn() {
+        PlayerID[] playerOrder = players.keySet().toArray(new PlayerID[0]);
+        currentTurn = (currentTurn + 1) % playerOrder.length;
     }
 
     private void handleHumanChoice(int choice, Player player) {
-
+        switch (choice) {
+            case 1 -> blitz.drawFromDeck(player, gameView);
+            case 2 -> blitz.drawFromDiscardPile(player, gameView);
+            case 3 -> blitz.knock(player);
+            default -> gameView.displayInvalidChoice();
+        }
     }
+
 }
