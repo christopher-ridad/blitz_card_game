@@ -18,10 +18,27 @@ public class GameController {
 
 
     public GameController() {
-        this.statsManager = new StatsManager();
         this.gameView = new GameView();
-        this.blitz = new Blitz();
+
+        // Initialize deck and discard pile for Blitz
+        Deck deck = new Deck();
+        deck.shuffle();
+        DiscardPile discardPile = new DiscardPile();
+        
+        // Initialize observers list
+        List<Observer> observers = new ArrayList<>();
+        
+        // Create Blitz instance
+        this.blitz = new Blitz(deck, discardPile, observers);
+        
+        // Initialize StatsManager with proper dependencies
+        Loader loader = new CSVFileLoader("game_stats.csv");
+        Saver saver = new CSVFileSaver("game_stats.csv");
+        this.statsManager = new StatsManager(blitz, loader, saver);
+
+        
         this.players = new LinkedHashMap<>();
+        this.playerOrder = new ArrayList<>();
         this.currentTurn = 0;
     }
 
