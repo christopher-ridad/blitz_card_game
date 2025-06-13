@@ -25,12 +25,20 @@ public class Blitz {
         this.currentPlayerTurn = 0;  // Starting player index (can be adjusted)
     }
 
-    public void drawCardFromDeck() {
+    public Card seeTopCardOfDiscardPile() {
+        return discardPile.peekTopCard();
+    }
+
+    public void deckIsEmpty() {
         if (deck.isEmpty()) {
             currentGameState = GameState.DECK_EMPTY;
             notifyObservers();
-            return;
         }
+        return isEmpty;
+    }
+
+    public void drawCardFromDeck() {
+
 
         Card drawnCard = deck.drawCard();
         lastMoveMade = new Move(
@@ -100,58 +108,4 @@ public class Blitz {
     public Move getLastMoveMade() {
         return lastMoveMade;
     }
-}
-
-        //
-//    OUTER:
-//            while(true) {
-//        System.out.println("====================");
-//        System.out.println("Card Drawn!");
-//        System.out.println("====================");
-//        System.out.println("You drew: **" + drawnCard + "**");
-//        System.out.println("Do you want to keep this card? (y/n)");
-//
-//        String choice = scan.next();
-//
-//        switch (choice) {
-//            case "y" -> {
-//                // Determine which card the player wants to discard from their hand
-//                System.out.println("====================");
-//                System.out.println("Discard a Card ");
-//                System.out.println("====================");
-//                System.out.println("Which card do you want to discard?");
-//                System.out.println("(1) " + player.hand.get(0));
-//                System.out.println("(2) " + player.hand.get(1));
-//                System.out.println("(3) " + player.hand.get(2));
-//                System.out.println("====================");
-//                int discardChoice = Integer.parseInt(scan.next());
-//                Card discardedCard = player.hand.get(discardChoice - 1);
-//                // Add drawn card to player's hand and remove the discarded card
-//                player.removeCard(discardedCard);
-//                System.out.println("====================");
-//                System.out.println("You discarded the " + discardedCard + ".");
-//                System.out.println("====================");
-//                player.addCard(drawnCard);
-//                // Add discarded card to the discard pile
-//                discardPile.addCard(discardedCard);
-//                // Show new hand and score
-//                displayNewHand(player);
-//                break OUTER;
-//            }
-//            case "n" -> {
-//                // Add the drawn card to the discard pile
-//                System.out.println("====================");
-//                System.out.println("You discarded the " + drawnCard + ".");
-//                System.out.println("====================");
-//                discardPile.addCard(drawnCard);
-//                break OUTER;
-//            }
-//            default -> {
-//                System.out.println("====================");
-//                System.out.println("INVALID CHOICE. TRY AGAIN.");
-//                System.out.println("====================");
-//            }
-//        }
-//    }
-//}
 }
