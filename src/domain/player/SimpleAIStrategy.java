@@ -1,57 +1,75 @@
 package src.domain.player;
 
 import src.domain.blitzengine.Blitz;
-import src.domain.blitzengine.Move;
 import src.domain.cards.Card;
 import src.domain.blitzengine.PlayerTurn;
 import src.domain.blitzengine.BlitzScoringStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Date;
 
 public class SimpleAIStrategy implements AIStrategy {
     private final Blitz blitz;
-    private Move latestMove;
 
     public SimpleAIStrategy(Blitz blitz) {
         this.blitz = blitz;
-        this.latestMove = null;
         blitz.addObserver(this);
     }
 
-    public Move makeMoveDecision(Hand hand){
-        Card topCard = latestMove.getCardDiscarded();
+    public PlayerTurn makeMoveDecision(Hand hand) {
+        List<Card> currentHand = new ArrayList<>(hand.getCards());
+        int currentScore = hand.getScore();
 
-        List<Card> currentHand = new ArrayList<>(hand.getCards()); // You’ll need this method in Hand
-        Card discardCandidate = topCard;
-        int bestScore = hand.getScore();
+        if (currentScore >= 27) {
+            return PlayerTurn.KNOCK;
+        }
 
-        for (Card card : currentHand) {
-            List<Card> simulated = new ArrayList<>(currentHand);
-            simulated.remove(card);
-            simulated.add(topCard);
-            int simulatedScore =  new BlitzScoringStrategy().calculateScore(simulated);
+        Card discardTop = blitz.seeTopCardOfDiscardPile();
+        if(improveHand(currentHand, discardTop)){
+            return PlayerTurn.DRAW_CARD_FROM_DISCARD_PILE;
+        }
 
-            if (simulatedScore > bestScore) {
-                bestScore = simulatedScore;
-                discardCandidate = card;
+        return PlayerTurn.DRAW_CARD_FROM_DECK;
+    }
+
+    private boolean improveHand(List<Card> hand, Card incomingCard) {
+        BlitzScoringStrategy scoringStrategy = new BlitzScoringStrategy();
+        int originalScore = scoringStrategy.calculateScore(hand);
+
+        for (Card card : hand) {
+            List<Card> simulatedHand = new ArrayList<>(hand);
+            simulatedHand.remove(card);
+            simulatedHand.add(incomingCard);
+
+            int simulatedScore = scoringStrategy.calculateScore(simulatedHand);
+            if (simulatedScore > originalScore) {
+                return true;
             }
         }
+        return false;
+    }
 
-        if (bestScore >= 27) {
-            blitz.knock();
-            return new Move(PlayerTurn.KNOCK, null, null, null, new Date());
+    public Card chooseBestCardToDiscard(List<Card> hand, Card incomingCard) {
+        Card bestCardToDiscard = null;
+        int bestScore = 0;
+        BlitzScoringStrategy scoringStrategy = new BlitzScoringStrategy();
+
+        for (Card card : hand) {
+            List<Card> simulatedHand = new ArrayList<>(hand);
+            simulatedHand.remove(card);
+            simulatedHand.add(incomingCard);
+
+            int simulatedScore = scoringStrategy.calculateScore(simulatedHand);
+            if (simulatedScore > bestScore) {
+                bestScore = simulatedScore;
+                bestCardToDiscard = card;
+            }
         }
-
-        blitz.drawCardFromDiscardPile();
-        hand.removeCard(discardCandidate);
-        hand.addCard(topCard);
-        return new Move(PlayerTurn.DRAW_CARD_FROM_DISCARD_PILE, null, topCard, discardCandidate, new Date());
+        return bestCardToDiscard;
     }
 
     @Override
     public void update() {
-        this.latestMove = blitz.getLastMoveMade();
+        return;
     }
 }
