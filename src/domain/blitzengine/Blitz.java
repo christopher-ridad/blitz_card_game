@@ -1,12 +1,11 @@
 package src.domain.blitzengine;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Date;
-
-import src.domain.cards.Deck;
-import src.domain.cards.Card;
+import java.util.List;
 import src.datasource.Observer;
+import src.domain.cards.Card;
+import src.domain.cards.Deck;
 
 public class Blitz {
     private Deck deck;
@@ -29,8 +28,9 @@ public class Blitz {
         return discardPile.peekTopCard();
     }
 
-    public void deckIsEmpty() {
-        if (deck.isEmpty()) {
+    public boolean deckIsEmpty() {
+        boolean isEmpty = deck.isEmpty();
+        if (isEmpty) {
             currentGameState = GameState.DECK_EMPTY;
             notifyObservers();
         }

@@ -1,10 +1,9 @@
 package presentation;
 
-import domain.player.Player;
-import domain.card.Card;
-
 import java.util.List;
 import java.util.Scanner;
+import src.domain.cards.*;
+import src.domain.player.*;
 
 public class GameView {
     private final Scanner scanner = new Scanner(System.in);
@@ -98,5 +97,31 @@ public class GameView {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public int promptNumberOfPlayers() {
+        System.out.print("Enter number of players (3–6): ");
+        try {
+            return Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            return -1; // Invalid input
+        }
+    }
+
+    public void displayInitialHand(Player player) {
+        System.out.println("\n" + player.getPlayerId() + "'s starting hand:");
+            for (Card card : player.getHand().getCards()) {
+        System.out.println(" - " + card);
+        }
+        System.out.println("Initial score: " + player.getHand().getScore());
+        }
+
+    public void displayMessage(String message) {
+        System.out.println(message);
+    }
+
+    public int promptHumanMove(Player player) {
+        displayTurnInfo(player, -1, null);
+        return promptPlayerChoice(true);
     }
 }

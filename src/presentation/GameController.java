@@ -1,5 +1,7 @@
 package src.presentation;
 
+import domain.*;
+
 import domain.blitzengine.*;
 import domain.player.*;
 import domain.stats.*;

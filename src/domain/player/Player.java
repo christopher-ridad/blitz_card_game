@@ -40,6 +40,6 @@ public class Player {
     }
 
     public Hand getHand(){
-        return thid.hand;
+        return this.hand;
     }
 }
