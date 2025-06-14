@@ -90,8 +90,10 @@ public class GameController {
             }
             players.add(player); // LOOK AT THIS AGAIN!!!!!!!!!!!!!!!!!!!
             //gameView.displayInitialHand(player);
+
         }
     }
+
 
     private void switchTurn() {
         currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
@@ -185,59 +187,11 @@ public class GameController {
 
     private void applyMove(Player player, PlayerTurn move) {
         switch (move) {
-            case DRAW_CARD_FROM_DECK -> {
-                Card drawnCard = blitz.drawCardFromDeck();
-                player.getHand().addCard(drawnCard);
-                gameView.displayMessage(player.getPlayerId() + " drew the " + drawnCard + " from the deck.");
-                gameView.displayDelay();
+            case DRAW_CARD_FROM_DECK -> {detectAndHandleDrawCardFromDeck(player);}
 
-                Card discard;
-                if (player.isBot()) {
-                    try {
-                        discard = player.chooseBestCardToDiscard(drawnCard);
-                    } catch (NoMoveDecisionException e) {
-                        e.printStackTrace();
-                        return;
-                    }
-                } else {
-                    discard = gameView.promptDiscardCard(player);
-                }
+            case DRAW_CARD_FROM_DISCARD_PILE -> {detectAndHandleDrawCardFromDiscardPile(player);}
 
-                player.getHand().removeCard(discard);
-                blitz.discardCard(discard);
-                gameView.displayMessage(player.getPlayerId() + " discarded the " + discard);
-                gameView.displayDelay();
-            }
-
-            case DRAW_CARD_FROM_DISCARD_PILE -> {
-                Card drawnCard = blitz.drawCardFromDiscardPile();
-                player.getHand().addCard(drawnCard);
-                gameView.displayMessage(player.getPlayerId() + " drew the " + drawnCard + " from the discard pile.");
-                gameView.displayDelay();
-
-                Card discard;
-                if (player.isBot()) {
-                    try {
-                        discard = player.chooseBestCardToDiscard(drawnCard);
-                    } catch (NoMoveDecisionException e) {
-                        e.printStackTrace();
-                        return;
-                    }
-                } else {
-                    discard = gameView.promptDiscardCard(player);
-                }
-
-                player.getHand().removeCard(discard);
-                blitz.discardCard(discard);
-                gameView.displayMessage(player.getPlayerId() + " discarded " + discard);
-                gameView.displayDelay();
-            }
-
-            case KNOCK -> {
-                blitz.knock(player.getPlayerId());
-                gameView.displayMessage(player.getPlayerId() + " knocked.");
-                gameView.displayDelay();
-            }
+            case KNOCK -> {detectAndHandleKnock(player);}
 
             default -> {
                 gameView.displayMessage("Invalid move.");
@@ -262,24 +216,45 @@ public class GameController {
     private void detectAndHandleDrawCardFromDeck(Player player) {
         Card drawnCard = blitz.drawCardFromDeck();
         player.getHand().addCard(drawnCard);
-        gameView.displayMessage(player.getPlayerId() + " drew a card from the deck.");
+        gameView.displayMessage(player.getPlayerId() + " drew the " + drawnCard + " from the deck.");
         gameView.displayDelay();
 
-        // Prompt discard
-        Card discard = gameView.promptDiscardCard(player);
+        Card discard;
+        if (player.isBot()) {
+            try {
+                discard = player.chooseBestCardToDiscard(drawnCard);
+            } catch (NoMoveDecisionException e) {
+                e.printStackTrace();
+                return;
+            }
+        } else {
+            discard = gameView.promptDiscardCard(player);
+        }
+
         player.getHand().removeCard(discard);
         blitz.discardCard(discard);
-        gameView.displayMessage(player.getPlayerId() + " discarded " + discard);
+        gameView.displayMessage(player.getPlayerId() + " discarded the " + discard);
         gameView.displayDelay();
     }
 
     private void detectAndHandleDrawCardFromDiscardPile(Player player) {
         Card drawnCard = blitz.drawCardFromDiscardPile();
         player.getHand().addCard(drawnCard);
-        gameView.displayMessage(player.getPlayerId() + " drew a card from the discard pile.");
+        gameView.displayMessage(player.getPlayerId() + " drew the " + drawnCard + " from the discard pile.");
         gameView.displayDelay();
 
-        Card discard = gameView.promptDiscardCard(player);
+        Card discard;
+        if (player.isBot()) {
+            try {
+                discard = player.chooseBestCardToDiscard(drawnCard);
+            } catch (NoMoveDecisionException e) {
+                e.printStackTrace();
+                return;
+            }
+        } else {
+            discard = gameView.promptDiscardCard(player);
+        }
+
         player.getHand().removeCard(discard);
         blitz.discardCard(discard);
         gameView.displayMessage(player.getPlayerId() + " discarded " + discard);
