@@ -8,8 +8,9 @@ public class GameHistoryLoader implements Loader {
     }
 
     @Override
-    public void next() {
+    public String next() {
         // Load next history record
+        return "";
     }
 
     @Override
