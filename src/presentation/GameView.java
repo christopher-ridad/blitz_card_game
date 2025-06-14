@@ -1,10 +1,9 @@
 package src.presentation;
 
-import src.domain.player.Player;
-import src.domain.cards.Card;
-
 import java.util.List;
 import java.util.Scanner;
+import src.domain.cards.Card;
+import src.domain.player.Player;
 
 public class GameView {
     private final Scanner scanner = new Scanner(System.in);
@@ -78,12 +77,6 @@ public class GameView {
         return Integer.parseInt(scanner.nextLine()) - 1;
     }
 
-    public boolean confirmCardKeep(Card drawnCard) {
-        System.out.println("You drew: " + drawnCard);
-        System.out.println("Keep this card? (y/n)");
-        return scanner.nextLine().equalsIgnoreCase("y");
-    }
-
     public void displayEndScreen(Player winner, List<Player> allPlayers) {
         System.out.println("\n=== GAME OVER ===");
         System.out.println("Winner: " + winner.getPlayerId() + " with score: " + winner.getHand().getScore());
@@ -111,7 +104,6 @@ public class GameView {
     }
 
     public int promptHumanMove(Player player) {
-        displayTurnInfo(player, -1, null);
         return promptPlayerChoice(true);
     }
 

@@ -29,6 +29,10 @@ public class Blitz {
         return discardPile.peekTopCard();
     }
 
+    public int getDeckSize(){
+        return deck.size();
+    }
+
     public boolean deckIsEmpty() {
         boolean isEmpty = deck.isEmpty();
         if (isEmpty) {

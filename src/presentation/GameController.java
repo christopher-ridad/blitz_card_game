@@ -100,6 +100,7 @@ public class GameController {
 
     private void handleRegularRound() {
         Player currentPlayer = players.get(currentPlayerIndex);
+        displayTurnInfoForCurrentPlayer(currentPlayer);
         PlayerTurn move = null; 
 
         if (currentPlayer.isBot()) {
@@ -121,6 +122,7 @@ public class GameController {
 
     private void handleKnockRound() {
         Player currentPlayer = players.get(currentPlayerIndex);
+        displayTurnInfoForCurrentPlayer(currentPlayer);
         PlayerID knockerId = blitz.getKnockerPlayerID(); // THIS METHOD DOES NOT EXIST, MIGHT NEED IT
 
         if (currentPlayer.isBot()) {
@@ -186,8 +188,8 @@ public class GameController {
             case DRAW_CARD_FROM_DECK -> {
                 Card drawnCard = blitz.drawCardFromDeck();
                 player.getHand().addCard(drawnCard);
-                gameView.displayMessage(player.getPlayerId() + " drew a card from the deck.");
-
+                gameView.displayMessage(player.getPlayerId() + " drew the card " + drawnCard + " from the deck.");
+4
                 // Prompt discard
                 Card discard = gameView.promptDiscardCard(player);
                 player.getHand().removeCard(discard);
@@ -197,7 +199,7 @@ public class GameController {
             case DRAW_CARD_FROM_DISCARD_PILE -> {
                 Card drawnCard = blitz.drawCardFromDiscardPile();
                 player.getHand().addCard(drawnCard);
-                gameView.displayMessage(player.getPlayerId() + " drew a card from the discard pile.");
+                gameView.displayMessage(player.getPlayerId() + " drew the card " + drawnCard + " from the discard pile.");
 
                 // Prompt discard
                 Card discard = gameView.promptDiscardCard(player);
@@ -226,7 +228,6 @@ public class GameController {
         Player winner = determineWinner();
         gameView.displayEndScreen(winner, players);
         statsManager.recordGameResult(players, endState);
-        gameView.displayMessage("Game ended: " + endState);
     }
 
     private void detectAndHandleDrawCardFromDeck() {
@@ -241,6 +242,13 @@ public class GameController {
         blitz.knock(playerID);
         gameView.displayMessage(playerID + " knocked!");
     }
+
+    private void displayTurnInfoForCurrentPlayer(Player currentPlayer) {
+        int deckSize = blitz.getDeckSize();
+        Card topDiscard = blitz.seeTopCardOfDiscardPile();
+        gameView.displayTurnInfo(currentPlayer, deckSize, topDiscard);
+    }
+
     private Player determineWinner() {
         Player winner = null;
         int highestScore = Integer.MIN_VALUE;

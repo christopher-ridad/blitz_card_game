@@ -1,13 +1,12 @@
 package src.domain.blitzengine;
 
-import src.domain.cards.Card;
-import src.domain.cards.Suit;
-import src.domain.cards.Rank;
-import src.domain.player.ScoringStrategy;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import src.domain.cards.Card;
+import src.domain.cards.Rank;
+import src.domain.cards.Suit;
+import src.domain.player.ScoringStrategy;
 
 public class BlitzScoringStrategy implements ScoringStrategy {
     public int calculateScore(List<Card> cards){
@@ -57,7 +56,6 @@ public class BlitzScoringStrategy implements ScoringStrategy {
 
     private int getRankValue(Rank rank) {
         return switch (rank) {
-            case ONE -> 1;
             case TWO -> 2;
             case THREE -> 3;
             case FOUR -> 4;

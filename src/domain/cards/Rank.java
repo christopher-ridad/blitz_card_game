@@ -1,7 +1,6 @@
 package src.domain.cards;
 
 public enum Rank {
-    ONE,
     TWO,
     THREE,
     FOUR,

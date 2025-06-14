@@ -1,9 +1,7 @@
 package src.presentation;
 
-import src.domain.player.Player;
-import src.datasource.*;
-
 import java.util.Scanner;
+import src.datasource.*;
 
 public class MainWindow{
     private GameController gameController;
@@ -13,7 +11,7 @@ public class MainWindow{
     public MainWindow(){
         this.gameController = new GameController();
         this.statsView =  new StatsView(new CSVFileLoader("path/to/your/file.csv"));
-        this.scanner = new Scanner (System.in);
+        this.scanner = new Scanner(System.in);
 
     }
 
