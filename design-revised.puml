@@ -6,16 +6,37 @@ package presentation{
 
     +class MainWindow {
         -gameController: GameController
-        -statsWindow: StatsView
+        -statsView: StatsView
+        -scanner: Scanner
 
+        +MainWindow()
         +display(): void
+
         -handleStartGame(): void
         -handleViewStats(): void
     }
 
     +class GameView{
-        ~displayGameSetup(): void
-        ~displayEndScreen(): void
+        +promptPlayerChoice(canKnock: boolean): int
+        +promptDiscardChoice(hand: List<Card>): int
+        +promptDiscardCard(player: Player): Card
+        +promptHumanMove(player: Player): int
+        +promptNumberOfPlayers(): int
+
+        +displayGameSetup(): void
+        +displayTurnInfo(player: Player, deckSize: int, topDiscard: Card): void
+        +displayEndScreen(winner: Player, allPlayers: List<Player>): void
+        +displayDelay(): void
+        +displayMessage(message: String): void
+        +displayInitialHand(player: Player): void
+        +displayPlayerDrewCard(playerId: PlayerID, card: Card, source: String): void
+        +displayPlayerDiscardedCard(playerId: PlayerID, card: Card): void
+        +displayPlayerKnocked(playerId: PlayerID): void
+        +displayInvalidMove(): void
+        +displayDeckEmpty(): void
+        +displayInvalidNumberOfPlayers(): void
+        +displayKnockerTurnMessage(): void
+        +displayInvalidKnockRoundChoice(): void
     }
 
     +class StatsView {
@@ -31,17 +52,28 @@ package presentation{
         -statsManager: StatsManager
         -players: Map<int, Player>
         -currentTurn: int
+        -gameRunning: boolean
+        -currentPlayerIndex: int
 
         +GameController()
-        -setup(): void
         -runGameLoop(): void
-        -switchPlayerTurn(): void
+        +getStatsManager(): StatsManager
 
-        -detectAndHandleDrawCardFromDeck(): void
-        -detectAndHandleDrawCardFromDiscardPile(): void
-        -detectAndHandleKnock(): void
-        -detectAndHandleInstantWin(): void
-        -detectAndHandleStatsViewing(): void
+        -setupPlayers(): void
+        -handleRegularRound(): void
+        -handleKnockRound(): void
+        -handleDeckEmpty(): void
+        -hasInstantWinCombo(hand: Hand): boolean
+        -endGame(endState: GameState): void
+        -switchTurn(): void
+        -displayTurnInfoForCurrentPlayer(currentPlayer: Player): void
+        -handleHumanChoice(choice: int, player: Player): void
+        -applyMove(player: Player, move: PlayerTurn): void
+        -convertChoiceToPlayerTurn(choice: int): PlayerTurn
+        -detectAndHandleDrawCardFromDeck(player: Player): void
+        -detectAndHandleDrawCardFromDiscardPile(player: Player): void
+        -detectAndHandleKnock(player: Player): void
+        -determineWinner(): Player
     }
 }
 
@@ -107,6 +139,7 @@ package domain{
             +Player(playerID: PlayerID, hand: Hand)
             +Player(playerID: PlayerID, hand: Hand, aiStrategy: AIStrategy)
             +getPlayerID(): PlayerID
+            +getHand(): Hand
             +makeMoveDecision() <<throws>> NoMoveDecisionException: Move
             +isBot(): boolean
         }
@@ -139,11 +172,12 @@ package domain{
         }
 
         +class SimpleAIStrategy {
-            -{final} blitz: Blitz
-            -lastMoveMade: Move
+           -blitz: Blitz
 
-            +makeMoveDecision(): Move
-            +update(): void
+           +SimpleAIStrategy(blitz: Blitz)
+           +makeMoveDecision(hand: Hand): PlayerTurn
+           +chooseBestCardToDiscard(hand: List<Card>, incomingCard: Card): Card
+           +update(): void
         }
 
         +class ProbabilisticAIStrategy {
@@ -206,16 +240,21 @@ package domain{
             -currentGameState: GameState
             -observers: List<Observer>
             -lastMoveMade: Move
+            -currentPlayerTurn: int
+            -knockerId: PlayerID
 
             +Blitz(deck: Deck, discardPile: DiscardPile, observers: List<Observer>)
 
-            +drawCardFromDeck(): void
-            +drawCardFromDiscardPile(): void
-            +knock(): void
-
+            +drawCardFromDeck(): Card
+            +drawCardFromDiscardPile(): Card
+            +discardCard(card: Card): void
+            +knock(playerID: PlayerID): void
+            +seeTopCardOfDiscardPile(): Card
+            +getDeckSize(): int
+            +deckIsEmpty(): boolean
+            +getKnockerPlayerID(): PlayerID
             +getCurrentGameState(): GameState
             +updateTurn(): void
-
             +addObserver(observer: Observer): void
             +removeObserver(observer: Observer): void
             +notifyObservers(): void
