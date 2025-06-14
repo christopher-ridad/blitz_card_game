@@ -216,7 +216,8 @@ public class GameController {
     }
 
     private void endGame(GameState endState) {
-        gameView.displayEndScreen();
+        Player winner = determineWinner();
+        gameView.displayEndScreen(winner, players);
         statsManager.recordGameResult(players, endState);
         gameView.displayMessage("Game ended: " + endState);
     }
