@@ -184,11 +184,59 @@ public class GameController {
     }
 
     private void applyMove(Player player, PlayerTurn move) {
-        switch(move){
-            case DRAW_CARD_FROM_DECK -> detectAndHandleDrawCardFromDeck(player);
-            case DRAW_CARD_FROM_DISCARD_PILE -> detectAndHandleDrawCardFromDiscardPile(player);
-            case KNOCK -> detectAndHandleKnock(player);
-            default -> gameView.displayMessage("Invalid move.");
+        switch (move) {
+            case DRAW_CARD_FROM_DECK -> {
+                Card drawnCard = blitz.drawCardFromDeck();
+                player.getHand().addCard(drawnCard);
+                gameView.displayMessage(player.getPlayerId() + " drew the " + drawnCard + " from the deck.");
+
+                Card discard;
+                if (player.isBot()) {
+                    try {
+                        discard = player.chooseBestCardToDiscard(drawnCard);
+                    } catch (NoMoveDecisionException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                } else {
+                    discard = gameView.promptDiscardCard(player);
+                }
+
+                player.getHand().removeCard(discard);
+                blitz.discardCard(discard);
+                gameView.displayMessage(player.getPlayerId() + " discarded the " + discard);
+            }
+
+            case DRAW_CARD_FROM_DISCARD_PILE -> {
+                Card drawnCard = blitz.drawCardFromDiscardPile();
+                player.getHand().addCard(drawnCard);
+                gameView.displayMessage(player.getPlayerId() + " drew the " + drawnCard + " from the discard pile.");
+
+                Card discard;
+                if (player.isBot()) {
+                    try {
+                        discard = player.chooseBestCardToDiscard(drawnCard);
+                    } catch (NoMoveDecisionException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                } else {
+                    discard = gameView.promptDiscardCard(player);
+                }
+
+                player.getHand().removeCard(discard);
+                blitz.discardCard(discard);
+                gameView.displayMessage(player.getPlayerId() + " discarded " + discard);
+            }
+
+            case KNOCK -> {
+                blitz.knock(player.getPlayerId());
+                gameView.displayMessage(player.getPlayerId() + " knocked.");
+            }
+
+            default -> {
+                gameView.displayMessage("Invalid move.");
+            }
         }
     }
 
