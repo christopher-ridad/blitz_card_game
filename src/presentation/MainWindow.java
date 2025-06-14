@@ -12,7 +12,7 @@ public class MainWindow{
 
     public MainWindow(){
         this.gameController = new GameController();
-        this.statsView =  new StatsView(new CSVFileLoader());
+        this.statsView =  new StatsView(new CSVFileLoader("path/to/your/file.csv"));
         this.scanner = new Scanner (System.in);
 
     }

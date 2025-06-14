@@ -2,9 +2,10 @@ package src.domain.stats;
 
 import src.domain.blitzengine.Move;
 import src.domain.player.Player;
+import src.domain.blitzengine.Blitz;
+import src.domain.blitzengine.GameState;
 import src.datasource.Loader;
 import src.datasource.Saver;
-import src.domain.blitzengine.Blitz;
 
 import java.util.*;
 
@@ -51,5 +52,20 @@ public class StatsManager implements src.datasource.Observer {
             loaded.add(loader.next().toString());
         }
         return loaded;
+    }
+
+    public void recordGameResult(List<Player> players, GameState state) {
+        for (Player player : players) {
+            List<Stats> statsList = playerSpecificStats.get(player);
+            if (statsList != null) {
+                for (Stats stat : statsList) {
+                    // Example: Add a summary line per player
+                    saver.append("Player " + player.getPlayerId() + " - Final Score: "
+                            + player.getHand().getScore() + " - GameState: " + state);
+                }
+            } else {
+                saver.append("Player " + player.getPlayerId() + " had no stats recorded. Final GameState: " + state);
+            }
+        }
     }
 } 

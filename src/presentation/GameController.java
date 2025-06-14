@@ -1,8 +1,12 @@
 package src.presentation;
 
+import src.datasource.CSVFileLoader;
+import src.datasource.CSVFileSaver;
+import src.datasource.Observer;
 import src.domain.blitzengine.*;
 import src.domain.player.*;
 import src.domain.stats.*;
+import src.domain.cards.*;
 
 import java.util.*;
 
@@ -17,7 +21,7 @@ public class GameController {
 
     public GameController() {
         this.gameView = new GameView();
-        this.statsManager = new StatsManager(blitz, new Loader(), new Saver());
+        this.statsManager = new StatsManager(blitz, new CSVFileLoader("stats.csv"), new CSVFileSaver("stats.csv"));
 
         Deck deck = new Deck();
         deck.shuffle();
@@ -237,7 +241,6 @@ public class GameController {
                 winner = player;
             }
         }
-
         return winner;
     }
     
