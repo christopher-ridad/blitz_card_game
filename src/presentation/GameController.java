@@ -89,7 +89,7 @@ public class GameController {
                 player = new Player(ids[i], hand, new SimpleAIStrategy(blitz));
             }
             players.add(player); // LOOK AT THIS AGAIN!!!!!!!!!!!!!!!!!!!
-            gameView.displayInitialHand(player);
+            //gameView.displayInitialHand(player);
         }
     }
 
@@ -189,6 +189,7 @@ public class GameController {
                 Card drawnCard = blitz.drawCardFromDeck();
                 player.getHand().addCard(drawnCard);
                 gameView.displayMessage(player.getPlayerId() + " drew the " + drawnCard + " from the deck.");
+                gameView.displayDelay();
 
                 Card discard;
                 if (player.isBot()) {
@@ -205,12 +206,14 @@ public class GameController {
                 player.getHand().removeCard(discard);
                 blitz.discardCard(discard);
                 gameView.displayMessage(player.getPlayerId() + " discarded the " + discard);
+                gameView.displayDelay();
             }
 
             case DRAW_CARD_FROM_DISCARD_PILE -> {
                 Card drawnCard = blitz.drawCardFromDiscardPile();
                 player.getHand().addCard(drawnCard);
                 gameView.displayMessage(player.getPlayerId() + " drew the " + drawnCard + " from the discard pile.");
+                gameView.displayDelay();
 
                 Card discard;
                 if (player.isBot()) {
@@ -227,21 +230,25 @@ public class GameController {
                 player.getHand().removeCard(discard);
                 blitz.discardCard(discard);
                 gameView.displayMessage(player.getPlayerId() + " discarded " + discard);
+                gameView.displayDelay();
             }
 
             case KNOCK -> {
                 blitz.knock(player.getPlayerId());
                 gameView.displayMessage(player.getPlayerId() + " knocked.");
+                gameView.displayDelay();
             }
 
             default -> {
                 gameView.displayMessage("Invalid move.");
+                gameView.displayDelay();
             }
         }
     }
 
     private void handleDeckEmpty() {
         gameView.displayMessage("Deck is empty! Ending game.");
+        gameView.displayDelay();
         endGame(GameState.DECK_EMPTY);
         gameRunning = false;
     }
@@ -256,27 +263,32 @@ public class GameController {
         Card drawnCard = blitz.drawCardFromDeck();
         player.getHand().addCard(drawnCard);
         gameView.displayMessage(player.getPlayerId() + " drew a card from the deck.");
+        gameView.displayDelay();
 
         // Prompt discard
         Card discard = gameView.promptDiscardCard(player);
         player.getHand().removeCard(discard);
         blitz.discardCard(discard);
         gameView.displayMessage(player.getPlayerId() + " discarded " + discard);
+        gameView.displayDelay();
     }
 
     private void detectAndHandleDrawCardFromDiscardPile(Player player) {
         Card drawnCard = blitz.drawCardFromDiscardPile();
         player.getHand().addCard(drawnCard);
         gameView.displayMessage(player.getPlayerId() + " drew a card from the discard pile.");
+        gameView.displayDelay();
 
         Card discard = gameView.promptDiscardCard(player);
         player.getHand().removeCard(discard);
         blitz.discardCard(discard);
         gameView.displayMessage(player.getPlayerId() + " discarded " + discard);
+        gameView.displayDelay();
     }
     private void detectAndHandleKnock(Player player) {
         blitz.knock(player.getPlayerId());
         gameView.displayMessage(player.getPlayerId() + " knocked!");
+        gameView.displayDelay();
     }
 
     private void displayTurnInfoForCurrentPlayer(Player currentPlayer) {
