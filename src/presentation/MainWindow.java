@@ -1,6 +1,8 @@
 package src.presentation;
 
 import src.domain.player.Player;
+import src.datasource.*;
+
 import java.util.Scanner;
 
 public class MainWindow{
@@ -10,7 +12,7 @@ public class MainWindow{
 
     public MainWindow(){
         this.gameController = new GameController();
-        this.statsView = new StatsView(gameController.getStatsManager());
+        this.statsView =  new StatsView(new CSVFileLoader());
         this.scanner = new Scanner (System.in);
 
     }

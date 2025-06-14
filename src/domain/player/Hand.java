@@ -13,12 +13,12 @@ public class Hand {
         this.scoringStrategy = scoringStrategy;
     }
 
-    void addCard(Card playingCard){
+    public void addCard(Card playingCard){
         this.cards.add(playingCard);
         calculateScore();
     }
 
-    void removeCard(Card playingCard){
+    public void removeCard(Card playingCard){
         this.cards.remove(playingCard);
         calculateScore();
     }

@@ -38,39 +38,25 @@ public class Blitz {
         return isEmpty;
     }
 
-    public void drawCardFromDeck() {
-
-
+    public Card drawCardFromDeck() {
         Card drawnCard = deck.drawCard();
-        lastMoveMade = new Move(
-                PlayerTurn.DRAW_CARD_FROM_DECK,
-                null,  // Set the player accordingly outside this class or extend method
-                drawnCard,
-                null,
-                new Date()
-        );
-
-        // Add drawn card to player's hand logic happens outside Blitz class
-        updateTurn();
+        return drawnCard;
         notifyObservers();
     }
 
-    public void drawCardFromDiscardPile() {
+    public Card drawCardFromDiscardPile() {
         Card drawnCard = discardPile.drawTopCard();
-        lastMoveMade = new Move(
-                PlayerTurn.DRAW_CARD_FROM_DISCARD_PILE,
-                null,
-                drawnCard,
-                null,
-                new Date()
-        );
-        updateTurn();
+        return drawnCard;
         notifyObservers();
+    }
+
+    public void discardCard(Card card) {
+        discardPile.addCard(card);
     }
 
     public void knock(PlayerID playerID) {
         currentGameState = GameState.KNOCK_ROUND;
-        knockerID = playerID;
+        this.knockerId = playerID;
         lastMoveMade = new Move(
                 PlayerTurn.KNOCK,
                 null,
