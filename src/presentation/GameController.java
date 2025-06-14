@@ -1,14 +1,13 @@
 package src.presentation;
 
+import java.util.*;
 import src.datasource.CSVFileLoader;
 import src.datasource.CSVFileSaver;
 import src.datasource.Observer;
 import src.domain.blitzengine.*;
+import src.domain.cards.*;
 import src.domain.player.*;
 import src.domain.stats.*;
-import src.domain.cards.*;
-
-import java.util.*;
 
 public class GameController {
     private final GameView gameView;
@@ -21,7 +20,6 @@ public class GameController {
 
     public GameController() {
         this.gameView = new GameView();
-        this.statsManager = new StatsManager(blitz, new CSVFileLoader("stats.csv"), new CSVFileSaver("stats.csv"));
 
         Deck deck = new Deck();
         deck.shuffle();
@@ -34,6 +32,8 @@ public class GameController {
         List<Observer> observers = new ArrayList<>();
 
         this.blitz = new Blitz(deck, discardPile, observers);
+
+        this.statsManager = new StatsManager(blitz, new CSVFileLoader("stats.csv"), new CSVFileSaver("stats.csv"));
 
         this.players = new ArrayList<>();
         this.gameRunning = true;
@@ -100,14 +100,23 @@ public class GameController {
 
     private void handleRegularRound() {
         Player currentPlayer = players.get(currentPlayerIndex);
+        PlayerTurn move = null; 
 
         if (currentPlayer.isBot()) {
-            PlayerTurn move = currentPlayer.makeMoveDecision();
+            try {
+                move = currentPlayer.makeMoveDecision(); 
+            }
+            catch (NoMoveDecisionException e) {
+                e.printStackTrace();
+                return; 
+            }
             applyMove(currentPlayer, move);
-        } else {
+        }
+        else {
             int choice = gameView.promptHumanMove(currentPlayer);
             handleHumanChoice(choice, currentPlayer);
         }
+        switchTurn();
     }
 
     private void handleKnockRound() {
@@ -121,8 +130,15 @@ public class GameController {
                 gameRunning = false;
                 return;
             } else {
-                // Let AI pick move from deck or discard
-                PlayerTurn move = currentPlayer.makeMoveDecision();
+                PlayerTurn move = null;
+                try{
+                    move = currentPlayer.makeMoveDecision();
+                } 
+                catch (NoMoveDecisionException e) {
+                    e.printStackTrace();
+                    return;
+                }
+
                 if (move == PlayerTurn.KNOCK) {
                     // Bots can't knock here, force a valid move
                     move = PlayerTurn.DRAW_CARD_FROM_DECK;
@@ -198,11 +214,6 @@ public class GameController {
                 return;
             }
         }
-
-        blitz.updateTurn();
-        blitz.notifyObservers();
-
-        switchTurn();
     }
 
     private void handleDeckEmpty() {
