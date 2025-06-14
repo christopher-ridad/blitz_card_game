@@ -222,6 +222,34 @@ public class GameController {
         gameView.displayMessage("Game ended: " + endState);
     }
 
+    private void detectAndHandleDrawCardFromDeck() {
+        blitz.drawCardFromDeck();
+    }
+
+    private void detectAndHandleDrawCardFromDiscardPile() {
+        blitz.drawCardFromDiscardPile();
+    }
+
+    private void detectAndHandleKnock(PlayerID playerID) {
+        blitz.knock(playerID);
+        gameView.displayMessage(playerID + " knocked!");
+    }
+    private Player determineWinner() {
+        Player winner = null;
+        int highestScore = Integer.MIN_VALUE;
+
+        for (Player player : players) {
+            int score = player.getHand().getScore();
+            if (score > highestScore) {
+                highestScore = score;
+                winner = player;
+            }
+        }
+
+        return winner;
+    }
+
+
 }
     
     
