@@ -1,12 +1,11 @@
 package src.domain.blitzengine;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Date;
-
-import src.domain.cards.Deck;
-import src.domain.cards.Card;
+import java.util.List;
 import src.datasource.Observer;
+import src.domain.cards.Card;
+import src.domain.cards.Deck;
 
 public class Blitz {
     private Deck deck;
@@ -15,6 +14,7 @@ public class Blitz {
     private List<Observer> observers;
     private Move lastMoveMade;
     private int currentPlayerTurn; // You can track whose turn it is, e.g., by player index
+    private PlayerID knockerId = null;
 
     public Blitz(Deck deck, DiscardPile discardPile, List<Observer> observers) {
         this.deck = deck;
@@ -29,8 +29,9 @@ public class Blitz {
         return discardPile.peekTopCard();
     }
 
-    public void deckIsEmpty() {
-        if (deck.isEmpty()) {
+    public boolean deckIsEmpty() {
+        boolean isEmpty = deck.isEmpty();
+        if (isEmpty) {
             currentGameState = GameState.DECK_EMPTY;
             notifyObservers();
         }
@@ -67,8 +68,9 @@ public class Blitz {
         notifyObservers();
     }
 
-    public void knock() {
+    public void knock(PlayerID playerID) {
         currentGameState = GameState.KNOCK_ROUND;
+        knockerID = playerID;
         lastMoveMade = new Move(
                 PlayerTurn.KNOCK,
                 null,
@@ -77,6 +79,10 @@ public class Blitz {
                 new Date()
         );
         notifyObservers();
+    }
+
+    public PlayerID getKnockerPlayerID() {
+        return knockerId;
     }
 
     public GameState getCurrentGameState() {
