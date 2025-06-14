@@ -6,6 +6,7 @@ import src.domain.blitzengine.*;
 import src.domain.player.*;
 import src.domain.stats.*;
 import src.domain.card.*;
+import src.domain.cards.Deck;
 
 import java.util.*;
 
@@ -207,5 +208,19 @@ public class GameController {
 
         switchTurn();
     }
+
+    private void handleDeckEmpty() {
+        gameView.displayMessage("Deck is empty! Ending game.");
+        endGame(GameState.DECK_EMPTY);
+        gameRunning = false;
+    }
+
+    private void endGame(GameState endState) {
+        gameView.displayEndScreen();
+        statsManager.recordGameResult(players, endState);
+        gameView.displayMessage("Game ended: " + endState);
+    }
+
+}
     
     
