@@ -99,4 +99,39 @@ public class GameView {
             e.printStackTrace();
         }
     }
+
+    public void displayMessage(String message) {
+        System.out.println(message);
+    }
+
+    public Card promptDiscardCard(Player player) {
+        List<Card> hand = player.getHand().getCards();
+        int choice = promptDiscardChoice(hand);
+        return hand.get(choice);
+    }
+
+    public int promptHumanMove(Player player) {
+        displayTurnInfo(player, -1, null);
+        return promptPlayerChoice(true);
+    }
+
+    public void displayInitialHand(Player player) {
+        System.out.println("\n" + player.getPlayerId() + "'s starting hand:");
+        for (Card card : player.getHand().getCards()) {
+            System.out.println(" - " + card);
+        }
+        System.out.println("Initial score: " + player.getHand().getScore());
+    }
+
+    public int promptNumberOfPlayers() {
+        System.out.print("Enter number of players (3–6): ");
+        try {
+            return Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            return -1; // Invalid input
+        }
+    }
+
+
+
 }
