@@ -1,7 +1,9 @@
 package src.domain.player;
 
-import src.domain.blitzengine.Move;
 import src.domain.blitzengine.PlayerID;
+import src.domain.blitzengine.PlayerTurn;
+import src.domain.cards.Card;
+
 
 public class Player {
     private final boolean isBot;
@@ -28,11 +30,18 @@ public class Player {
         return playerId;
     }
 
-    public Move makeMoveDecision() throws NoMoveDecisionException {
+    public PlayerTurn makeMoveDecision() throws NoMoveDecisionException {
         if (aiStrategy == null) {
             throw new NoMoveDecisionException("AI strategy not set for this player.");
         }
-        return this.aiStrategy.makeMoveDecision(this.hand);
+        return aiStrategy.makeMoveDecision(hand);
+    }
+
+    public Card chooseBestCardToDiscard(Card incomingCard) throws NoMoveDecisionException {
+        if (aiStrategy == null) {
+            throw new NoMoveDecisionException("AI strategy not set for this player.");
+        }
+        return aiStrategy.chooseBestCardToDiscard(hand.getCards(), incomingCard);
     }
 
     public boolean isBot(){
@@ -40,6 +49,7 @@ public class Player {
     }
 
     public Hand getHand(){
-        return thid.hand;
+        return this.hand;
     }
+    
 }
