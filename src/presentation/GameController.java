@@ -3,8 +3,6 @@ package src.presentation;
 import src.domain.blitzengine.*;
 import src.domain.player.*;
 import src.domain.stats.*;
-import src.domain.cards.*;
-import src.datasource.Observer;
 
 import java.util.*;
 
@@ -203,9 +201,48 @@ public class GameController {
         switchTurn();
     }
 
+    private void handleDeckEmpty() {
+        gameView.displayMessage("Deck is empty! Ending game.");
+        endGame(GameState.DECK_EMPTY);
+        gameRunning = false;
+    }
+
+    private void endGame(GameState endState) {
+        Player winner = determineWinner();
+        gameView.displayEndScreen(winner, players);
+        statsManager.recordGameResult(players, endState);
+        gameView.displayMessage("Game ended: " + endState);
+    }
+
+    private void detectAndHandleDrawCardFromDeck() {
+        blitz.drawCardFromDeck();
+    }
+
+    private void detectAndHandleDrawCardFromDiscardPile() {
+        blitz.drawCardFromDiscardPile();
+    }
+
+    private void detectAndHandleKnock(PlayerID playerID) {
+        blitz.knock(playerID);
+        gameView.displayMessage(playerID + " knocked!");
+    }
+    private Player determineWinner() {
+        Player winner = null;
+        int highestScore = Integer.MIN_VALUE;
+
+        for (Player player : players) {
+            int score = player.getHand().getScore();
+            if (score > highestScore) {
+                highestScore = score;
+                winner = player;
+            }
+        }
+
+        return winner;
+    }
+    
     public StatsManager getStatsManager() {
         return statsManager;
     }
-
 }
     
