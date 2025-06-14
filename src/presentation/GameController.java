@@ -65,7 +65,7 @@ public class GameController {
         while (playerCount < 3 || playerCount > 6) {
             playerCount = gameView.promptNumberOfPlayers();
             if (playerCount < 3 || playerCount > 6) {
-                System.out.println("Please enter a number between 3 and 6.");
+                gameView.displayInvalidNumberOfPlayers();
             }
         }
 
@@ -91,7 +91,45 @@ public class GameController {
             players.add(player); // LOOK AT THIS AGAIN!!!!!!!!!!!!!!!!!!!
             //gameView.displayInitialHand(player);
 
+            if (hasInstantWinCombo(hand)) {
+                gameView.displayMessage(player.getPlayerId() + " has an INSTANT WIN with 10 + Face Card + Ace of same suit!");
+                gameView.displayDelay();
+                endGame(GameState.PLAYER_INSTANT_WIN);
+                gameRunning = false;
+                return;
+            }
         }
+    }
+
+    private boolean hasInstantWinCombo(Hand hand) {
+        boolean hasTen = false;
+        boolean hasFace = false; // JACK, QUEEN, KING
+        boolean hasAce = false;
+        Suit commonSuit = null;
+
+        for (Card card : hand.getCards()) {
+            Rank rank = card.getRank();
+            Suit suit = card.getSuit();
+
+            // Set the reference suit (first card's suit)
+            if (commonSuit == null) {
+                commonSuit = suit;
+            }
+
+            // If any card's suit doesn't match, return false
+            if (suit != commonSuit) {
+                return false;
+            }
+
+            // Check for required ranks
+            switch (rank) {
+                case TEN -> hasTen = true;
+                case JACK, QUEEN, KING -> hasFace = true;
+                case ACE -> hasAce = true;
+            }
+        }
+
+        return hasTen && hasFace && hasAce;
     }
 
 
@@ -152,7 +190,7 @@ public class GameController {
         } else {
             if (currentPlayer.getPlayerId() == knockerId) {
                 // Human knocker's turn, end game
-                gameView.displayMessage("It's your turn and you knocked earlier. The game will now end.");
+                gameView.displayKnockerTurnMessage();
                 endGame(blitz.getCurrentGameState());
                 gameRunning = false;
                 return;
@@ -162,7 +200,7 @@ public class GameController {
                 while (choice != 1 && choice != 2) {
                     choice = gameView.promptHumanMove(currentPlayer);
                     if (choice != 1 && choice != 2) {
-                        gameView.displayMessage("Invalid choice. You can only draw from the deck (1) or discard pile (2) in the knock round.");
+                        gameView.displayInvalidKnockRoundChoice();
                     }
                 }
                 handleHumanChoice(choice, currentPlayer);
@@ -194,14 +232,14 @@ public class GameController {
             case KNOCK -> {detectAndHandleKnock(player);}
 
             default -> {
-                gameView.displayMessage("Invalid move.");
+                gameView.displayInvalidMove();
                 gameView.displayDelay();
             }
         }
     }
 
     private void handleDeckEmpty() {
-        gameView.displayMessage("Deck is empty! Ending game.");
+        gameView.displayDeckEmpty();
         gameView.displayDelay();
         endGame(GameState.DECK_EMPTY);
         gameRunning = false;
@@ -216,7 +254,7 @@ public class GameController {
     private void detectAndHandleDrawCardFromDeck(Player player) {
         Card drawnCard = blitz.drawCardFromDeck();
         player.getHand().addCard(drawnCard);
-        gameView.displayMessage(player.getPlayerId() + " drew the " + drawnCard + " from the deck.");
+        gameView.displayPlayerDrewCard(player.getPlayerId(), drawnCard, "deck");
         gameView.displayDelay();
 
         Card discard;
@@ -233,14 +271,14 @@ public class GameController {
 
         player.getHand().removeCard(discard);
         blitz.discardCard(discard);
-        gameView.displayMessage(player.getPlayerId() + " discarded the " + discard);
+        gameView.displayPlayerDiscardedCard(player.getPlayerId(), discard);
         gameView.displayDelay();
     }
 
     private void detectAndHandleDrawCardFromDiscardPile(Player player) {
         Card drawnCard = blitz.drawCardFromDiscardPile();
         player.getHand().addCard(drawnCard);
-        gameView.displayMessage(player.getPlayerId() + " drew the " + drawnCard + " from the discard pile.");
+        gameView.displayPlayerDrewCard(player.getPlayerId(), drawnCard, "discard");
         gameView.displayDelay();
 
         Card discard;
@@ -257,12 +295,12 @@ public class GameController {
 
         player.getHand().removeCard(discard);
         blitz.discardCard(discard);
-        gameView.displayMessage(player.getPlayerId() + " discarded " + discard);
+        gameView.displayPlayerDiscardedCard(player.getPlayerId(), discard);
         gameView.displayDelay();
     }
     private void detectAndHandleKnock(Player player) {
         blitz.knock(player.getPlayerId());
-        gameView.displayMessage(player.getPlayerId() + " knocked!");
+        gameView.displayPlayerKnocked(player.getPlayerId());
         gameView.displayDelay();
     }
 

@@ -2,6 +2,7 @@ package src.presentation;
 
 import java.util.List;
 import java.util.Scanner;
+import src.domain.blitzengine.PlayerID;
 import src.domain.cards.Card;
 import src.domain.player.Player;
 
@@ -122,5 +123,37 @@ public class GameView {
         } catch (NumberFormatException e) {
             return -1;
         }
+    }
+
+    public void displayPlayerDrewCard(PlayerID playerId, Card card, String source) {
+        System.out.println(playerId + " drew the " + card + " from the " + source + ".");
+    }
+
+    public void displayPlayerDiscardedCard(PlayerID playerId, Card card) {
+        System.out.println(playerId + " discarded the " + card + ".");
+    }
+
+    public void displayPlayerKnocked(PlayerID playerId) {
+        System.out.println(playerId + " knocked!");
+    }
+
+    public void displayInvalidMove() {
+        System.out.println("Invalid move.");
+    }
+
+    public void displayDeckEmpty() {
+        System.out.println("Deck is empty! Ending game.");
+    }
+
+    public void displayInvalidNumberOfPlayers() {
+        System.out.println("Please enter a number between 3 and 6.");
+    }
+
+    public void displayKnockerTurnMessage() {
+        System.out.println("It's your turn and you knocked earlier. The game will now end.");
+    }
+
+    public void displayInvalidKnockRoundChoice() {
+        System.out.println("Invalid choice. You can only draw from the deck (1) or discard pile (2) in the knock round.");
     }
 }
