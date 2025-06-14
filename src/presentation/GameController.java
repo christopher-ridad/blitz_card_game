@@ -1,11 +1,10 @@
 package src.presentation;
 
-import src.domain.*;
-
 import src.domain.blitzengine.*;
 import src.domain.player.*;
 import src.domain.stats.*;
-import src.domain.card.*;
+import src.domain.cards.*;
+import src.datasource.Observer;
 
 import java.util.*;
 
@@ -20,7 +19,7 @@ public class GameController {
 
     public GameController() {
         this.gameView = new GameView();
-        this.statsManager = new StatsManager();
+        this.statsManager = new StatsManager(blitz, new Loader(), new Saver());
 
         Deck deck = new Deck();
         deck.shuffle();
@@ -31,7 +30,6 @@ public class GameController {
         discardPile.addCard(firstDiscardCard);
 
         List<Observer> observers = new ArrayList<>();
-        observers.add(gameView);
 
         this.blitz = new Blitz(deck, discardPile, observers);
 
@@ -62,30 +60,29 @@ public class GameController {
     private void setupPlayers() {
         int playerCount = -1;
 
-        while (playerCount < 3 || playerCount > 6){
+        while (playerCount < 3 || playerCount > 6) {
             playerCount = gameView.promptNumberOfPlayers();
-            if (playerCount < 3 || playerCount > 6){
+            if (playerCount < 3 || playerCount > 6) {
                 System.out.println("Please enter a number between 3 and 6.");
             }
         }
 
         PlayerID[] ids = PlayerID.values();
 
-        for (int i = 0; i < playerCount; i++){
-            Hand hand = new Hand();
+        for (int i = 0; i < playerCount; i++) {
+            Hand hand = new Hand(new ArrayList<>(), new BlitzScoringStrategy()); // COME BACK TO THIS
 
             // Deal 3 cards to this player
-            for (int j = 0; j < 3; j++){
+            for (int j = 0; j < 3; j++) {
                 Card card = blitz.drawCardFromDeck();
                 hand.addCard(card);
             }
 
             Player player;
-            if (i == 0){
+            if (i == 0) {
                 // First player is human
                 player = new Player(ids[i], hand);
-            }
-            else{
+            } else {
                 // All others are bots
                 player = new Player(ids[i], hand, new SimpleAIStrategy(blitz));
             }
@@ -99,14 +96,13 @@ public class GameController {
     }
 
 
-    private void handleRegularRound(){
+    private void handleRegularRound() {
         Player currentPlayer = players.get(currentPlayerIndex);
 
-        if (currentPlayer.isBot()){
+        if (currentPlayer.isBot()) {
             PlayerTurn move = currentPlayer.makeMoveDecision();
             applyMove(currentPlayer, move);
-        }
-        else{
+        } else {
             int choice = gameView.promptHumanMove(currentPlayer);
             handleHumanChoice(choice, currentPlayer);
         }
@@ -132,14 +128,13 @@ public class GameController {
                 applyMove(currentPlayer, move);
             }
         } else {
-            if (currentPlayer.getPlayerId() == knockerId){
+            if (currentPlayer.getPlayerId() == knockerId) {
                 // Human knocker's turn, end game
                 gameView.displayMessage("It's your turn and you knocked earlier. The game will now end.");
                 endGame(blitz.getCurrentGameState());
                 gameRunning = false;
                 return;
-            }
-            else{
+            } else {
                 // Human non-knocker turn: prompt to draw from deck or discard, then discard card, no knock allowed
                 int choice = -1;
                 while (choice != 1 && choice != 2) {
@@ -154,8 +149,8 @@ public class GameController {
         switchTurn();
     }
 
-    private PlayerTurn convertChoiceToPlayerTurn(int choice){
-        return switch (choice){
+    private PlayerTurn convertChoiceToPlayerTurn(int choice) {
+        return switch (choice) {
             case 1 -> PlayerTurn.DRAW_CARD_FROM_DECK;
             case 2 -> PlayerTurn.DRAW_CARD_FROM_DISCARD_PILE;
             case 3 -> PlayerTurn.KNOCK;
@@ -171,29 +166,29 @@ public class GameController {
     private void applyMove(Player player, PlayerTurn move) {
         switch (move) {
             case DRAW_CARD_FROM_DECK -> {
-                Card drawnCard = blitz.getDeck().drawCard();
+                Card drawnCard = blitz.drawCardFromDeck();
                 player.getHand().addCard(drawnCard);
                 gameView.displayMessage(player.getPlayerId() + " drew a card from the deck.");
 
                 // Prompt discard
-                Card discard = promptDiscardCard(player);
+                Card discard = gameView.promptDiscardCard(player);
                 player.getHand().removeCard(discard);
-                blitz.getDiscardPile().addCard(discard);
+                blitz.discardCard(discard);
                 gameView.displayMessage(player.getPlayerId() + " discarded " + discard);
             }
             case DRAW_CARD_FROM_DISCARD_PILE -> {
-                Card drawnCard = blitz.getDiscardPile().drawTopCard();
+                Card drawnCard = blitz.drawCardFromDiscardPile();
                 player.getHand().addCard(drawnCard);
                 gameView.displayMessage(player.getPlayerId() + " drew a card from the discard pile.");
 
                 // Prompt discard
-                Card discard = promptDiscardCard(player);
+                Card discard = gameView.promptDiscardCard(player);
                 player.getHand().removeCard(discard);
-                blitz.getDiscardPile().addCard(discard);
+                blitz.discardCard(discard);
                 gameView.displayMessage(player.getPlayerId() + " discarded " + discard);
             }
             case KNOCK -> {
-                blitz.knock();
+                blitz.knock(player.getPlayerId());
                 gameView.displayMessage(player.getPlayerId() + " knocked.");
             }
             default -> {
@@ -207,5 +202,10 @@ public class GameController {
 
         switchTurn();
     }
-    
+
+    public StatsManager getStatsManager() {
+        return statsManager;
+    }
+
+}
     

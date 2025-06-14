@@ -1,7 +1,7 @@
-package presentation;
+package src.presentation;
 
 import src.domain.player.Player;
-import src.domain.card.Card;
+import src.domain.cards.Card;
 
 import java.util.List;
 import java.util.Scanner;
@@ -131,7 +131,4 @@ public class GameView {
             return -1;
         }
     }
-
-
-
 }
