@@ -184,37 +184,11 @@ public class GameController {
     }
 
     private void applyMove(Player player, PlayerTurn move) {
-        switch (move) {
-            case DRAW_CARD_FROM_DECK -> {
-                Card drawnCard = blitz.drawCardFromDeck();
-                player.getHand().addCard(drawnCard);
-                gameView.displayMessage(player.getPlayerId() + " drew the card " + drawnCard + " from the deck.");
-4
-                // Prompt discard
-                Card discard = gameView.promptDiscardCard(player);
-                player.getHand().removeCard(discard);
-                blitz.discardCard(discard);
-                gameView.displayMessage(player.getPlayerId() + " discarded " + discard);
-            }
-            case DRAW_CARD_FROM_DISCARD_PILE -> {
-                Card drawnCard = blitz.drawCardFromDiscardPile();
-                player.getHand().addCard(drawnCard);
-                gameView.displayMessage(player.getPlayerId() + " drew the card " + drawnCard + " from the discard pile.");
-
-                // Prompt discard
-                Card discard = gameView.promptDiscardCard(player);
-                player.getHand().removeCard(discard);
-                blitz.discardCard(discard);
-                gameView.displayMessage(player.getPlayerId() + " discarded " + discard);
-            }
-            case KNOCK -> {
-                blitz.knock(player.getPlayerId());
-                gameView.displayMessage(player.getPlayerId() + " knocked.");
-            }
-            default -> {
-                gameView.displayMessage("Invalid move.");
-                return;
-            }
+        switch(move){
+            case DRAW_CARD_FROM_DECK -> detectAndHandleDrawCardFromDeck(player);
+            case DRAW_CARD_FROM_DISCARD_PILE -> detectAndHandleDrawCardFromDiscardPile(player);
+            case KNOCK -> detectAndHandleKnock(player);
+            default -> gameView.displayMessage("Invalid move.");
         }
     }
 
@@ -230,17 +204,31 @@ public class GameController {
         statsManager.recordGameResult(players, endState);
     }
 
-    private void detectAndHandleDrawCardFromDeck() {
-        blitz.drawCardFromDeck();
+    private void detectAndHandleDrawCardFromDeck(Player player) {
+        Card drawnCard = blitz.drawCardFromDeck();
+        player.getHand().addCard(drawnCard);
+        gameView.displayMessage(player.getPlayerId() + " drew a card from the deck.");
+
+        // Prompt discard
+        Card discard = gameView.promptDiscardCard(player);
+        player.getHand().removeCard(discard);
+        blitz.discardCard(discard);
+        gameView.displayMessage(player.getPlayerId() + " discarded " + discard);
     }
 
-    private void detectAndHandleDrawCardFromDiscardPile() {
-        blitz.drawCardFromDiscardPile();
-    }
+    private void detectAndHandleDrawCardFromDiscardPile(Player player) {
+        Card drawnCard = blitz.drawCardFromDiscardPile();
+        player.getHand().addCard(drawnCard);
+        gameView.displayMessage(player.getPlayerId() + " drew a card from the discard pile.");
 
-    private void detectAndHandleKnock(PlayerID playerID) {
-        blitz.knock(playerID);
-        gameView.displayMessage(playerID + " knocked!");
+        Card discard = gameView.promptDiscardCard(player);
+        player.getHand().removeCard(discard);
+        blitz.discardCard(discard);
+        gameView.displayMessage(player.getPlayerId() + " discarded " + discard);
+    }
+    private void detectAndHandleKnock(Player player) {
+        blitz.knock(player.getPlayerId());
+        gameView.displayMessage(player.getPlayerId() + " knocked!");
     }
 
     private void displayTurnInfoForCurrentPlayer(Player currentPlayer) {
