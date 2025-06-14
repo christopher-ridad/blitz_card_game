@@ -1,6 +1,6 @@
-package presentation;
+package src.presentation;
 
-import domain.player.Player;
+import src.domain.player.Player;
 import java.util.Scanner;
 
 public class MainWindow{

@@ -1,4 +1,4 @@
-package presentation;
+package src.presentation;
 
 public class Main{
     public static void main(String[] args){

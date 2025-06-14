@@ -1,6 +1,6 @@
-package presentation;
+package src.presentation;
 
-import datasource.Loader;
+import src.datasource.Loader;
 
 public class StatsView {
     private final Loader loader;
