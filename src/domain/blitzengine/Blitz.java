@@ -41,13 +41,13 @@ public class Blitz {
     public Card drawCardFromDeck() {
         Card drawnCard = deck.drawCard();
         return drawnCard;
-        notifyObservers();
     }
 
     public Card drawCardFromDiscardPile() {
         Card drawnCard = discardPile.drawTopCard();
-        return drawnCard;
         notifyObservers();
+        return drawnCard;
+        
     }
 
     public void discardCard(Card card) {
