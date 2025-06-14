@@ -1,7 +1,7 @@
 package presentation;
 
-import domain.player.Player;
-import domain.card.Card;
+import src.domain.player.Player;
+import src.domain.card.Card;
 
 import java.util.List;
 import java.util.Scanner;

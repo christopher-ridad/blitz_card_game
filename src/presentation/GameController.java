@@ -1,11 +1,11 @@
 package src.presentation;
 
-import domain.*;
+import src.domain.*;
 
-import domain.blitzengine.*;
-import domain.player.*;
-import domain.stats.*;
-import domain.card.*;
+import src.domain.blitzengine.*;
+import src.domain.player.*;
+import src.domain.stats.*;
+import src.domain.card.*;
 
 import java.util.*;
 

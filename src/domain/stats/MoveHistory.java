@@ -1,12 +1,7 @@
 package src.domain.stats;
 
-import src.domain.blitzengine.Move;
-import src.domain.player.Player;
-import datasource.Loader;
-import datasource.Saver;
-import src.domain.blitzengine.Blitz;
-
 import java.util.*;
+import src.domain.blitzengine.Move;
 
 class MoveHistory extends Stats {
     private List<Move> moves;
